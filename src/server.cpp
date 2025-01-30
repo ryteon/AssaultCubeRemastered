@@ -92,7 +92,7 @@ serveripblacklist ipblacklist;
 serveripcclist geoiplist;
 servernickblacklist nickblacklist;
 serverforbiddenlist forbiddenlist;
-//serverpasswords passwords;
+serverpasswords passwords;
 serverinfofile serverinfoinfo;
 serverinfofile serverinfomotd;
 
@@ -2752,9 +2752,9 @@ void changeclientrole(int client, int role, char *pwd, bool force)
     bool success = false;
     if(!isdedicated || !valid_client(client)) return;
     if(role == clients[client]->role) return;
-    if(role == CR_ADMIN && pwd && pwd[0] && strcmp(scl.adminpasswd, pwd))
+    if(role == CR_ADMIN && pwd && pwd[0] && !strcmp(scl.adminpasswd, pwd))
     {
-        mlog(ACLOG_INFO,"[%s] player %s used admin password in line", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]");
+        mlog(ACLOG_INFO,"[%s] player %s used admin password", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]");
         success = true;
     }
     if(clients[client]->checkvitadate(VS_ADMIN))
@@ -3085,6 +3085,8 @@ void process(ENetPacket *packet, int sender, int chan)
                 concatstring(tags, ", vita whitelist match");
                 banned = false;
             }
+            
+            mlog(ACLOG_INFO, "admin password: %s, client password: %s", scl.adminpasswd, cl->pwd);
 
             if(matchreconnect && !banned)
             { // former player reconnecting to a server in match mode
@@ -3101,11 +3103,11 @@ void process(ENetPacket *packet, int sender, int chan)
                 mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
-            else if(!strcmp(scl.adminpasswd, cl->pwd) && (banned && !srvfull && !srvprivate) && bantype != BAN_MASTER)
+            else if(!strcmp(scl.adminpasswd, cl->pwd))
             { // admin (or deban) password match
                 cl->isauthed = true;
                 if(wantrole == CR_ADMIN) clientrole = CR_ADMIN;
-                if(bantype == BAN_VOTE)
+                if(banned && bantype == BAN_VOTE)
                 {
                     loopv(bans) if(bans[i].address.host == cl->peer->address.host) { bans.remove(i); concatstring(tags, ", ban removed"); break; } // remove admin bans
                 }
@@ -4802,7 +4804,7 @@ void initserver(bool dedicated)
         if(gotvitas < 0) gotvitas = readvitas((vn = vitafilename_backup));
         if(gotvitas >= 0) mlog(ACLOG_INFO, "read %d player vitas from %s", gotvitas, vn);
         maprot.init(scl.maprotfile);
-        //passwords.init(scl.pwdfile, scl.adminpasswd);
+        passwords.init(scl.pwdfile, scl.adminpasswd);
         ipblacklist.init(scl.blfile);
         geoiplist.init(scl.geoipfile);
         nickblacklist.init(scl.nbfile);
@@ -4832,7 +4834,6 @@ void initserver(bool dedicated)
         #ifdef WIN32
         SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
         #endif
-        // kill -2 / Ctrl-C - see http://msdn.microsoft.com/en-us/library/xdkz3x12%28v=VS.100%29.aspx (or VS-2008?) for caveat (seems not to pertain to AC - 2011feb05:ft)
         if (signal(SIGINT, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGINT!");
         // kill -15 / probably process-manager on Win32 *shrug*
         if (signal(SIGTERM, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGTERM!");
@@ -4841,7 +4842,6 @@ void initserver(bool dedicated)
         if (signal(SIGHUP, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGHUP!");
         #endif
         mlog(ACLOG_INFO, "dedicated server started, waiting for clients...");
-        mlog(ACLOG_INFO, "Ctrl-C to exit"); // this will now actually call the atexit-hooks below - thanks to SIGINT hooked above - noticed and signal-code-docs found by SKB:2011feb05:ft:
         atexit(enet_deinitialize);
         atexit(cleanupserver);
         enet_time_set(0);
@@ -4918,4 +4918,3 @@ int main(int argc, char **argv)
     #endif
 }
 #endif
-
