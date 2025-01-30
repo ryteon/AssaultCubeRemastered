@@ -437,7 +437,7 @@ void rendercursor(int x, int y, int w)
 
 void fixresizedscreen()
 {
-#ifdef WIN32
+#ifdef false
     char broken_res[] = { 0x44, 0x69, 0x66, 0x62, 0x75, 0x21, 0x46, 0x6f, 0x68, 0x6a, 0x6f, 0x66, 0x01 };
     static int lastcheck = 0;
     #define screenproc(n,t) n##ess32##t
