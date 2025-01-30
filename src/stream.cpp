@@ -112,7 +112,7 @@ bool fileexists(const char *path, const char *mode)
     bool exists = true;
     if(mode[0]=='w' || mode[0]=='a') path = parentdir(path);
 #ifdef WIN32
-    if(GetFileAttributes((const wchar_t *)path) == INVALID_FILE_ATTRIBUTES) exists = false;
+    if(GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES) exists = false;
 #else
     if(access(path, R_OK | (mode[0]=='w' || mode[0]=='a' ? W_OK : 0)) == -1) exists = false;
 #endif
@@ -130,7 +130,7 @@ bool createdir(const char *path)
 		path = strip;
     }
 #ifdef WIN32
-    return CreateDirectory((const wchar_t*)path, NULL)!=0;
+    return CreateDirectory(path, NULL)!=0;
 #else
     return mkdir(path, 0777)==0;
 #endif
