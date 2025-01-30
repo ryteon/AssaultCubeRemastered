@@ -508,7 +508,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 d->maxrolleffect = (float)clamp(getint(p), 0, ROLLEFFMAX);
                 d->ffov = (float)clamp(getint(p), 75, 120);
                 d->scopefov = (float)clamp(getint(p), 5, 60);
-                d->address = getint(p); // partial IP address
+                //d->address = getint(p); // partial IP address
 
                 if(m_flags_) loopi(2)
                 {

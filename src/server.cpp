@@ -2747,14 +2747,12 @@ void callvotepacket(int cn, voteinfo *v = curvote)
 
 void changeclientrole(int client, int role, char *pwd, bool force)
 {
-    pwddetail pd;
     bool success = false;
     if(!isdedicated || !valid_client(client)) return;
-    pd.line = -1;
     if(role == clients[client]->role) return;
-    if(role == CR_ADMIN && pwd && pwd[0] && strcmp(scl.adminpasswd, pwd) && !pd.denyadmin)
+    if(role == CR_ADMIN && pwd && pwd[0] && strcmp(scl.adminpasswd, pwd))
     {
-        mlog(ACLOG_INFO,"[%s] player %s used admin password in line %d", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", pd.line);
+        mlog(ACLOG_INFO,"[%s] player %s used admin password in line", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]");
         success = true;
     }
     if(clients[client]->checkvitadate(VS_ADMIN))
@@ -3039,7 +3037,6 @@ void process(ENetPacket *packet, int sender, int chan)
     ucharbuf p(packet->data, packet->dataLength);
     char text[MAXTRANS];
     client *cl = sender>=0 ? clients[sender] : NULL;
-    pwddetail pd;
     int type;
 
     if(cl && !cl->isauthed)
@@ -3047,11 +3044,11 @@ void process(ENetPacket *packet, int sender, int chan)
         int clientrole = CR_DEFAULT;
 
         if(chan==0) return;
-        else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) disconnect_client(sender, DISC_TAGT);
+        else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) return; //disconnect_client(sender, DISC_TAGT);
         else if(type == SV_SERVINFO_RESPONSE)
         {
-			//int curpeerport = getint(p);
-			//enet_uint32 curpeerip = getip4(p);
+			int curpeerport = getint(p);
+			enet_uint32 curpeerip = getip4(p);
 			sendf(sender, 1, "rii", SV_SERVINFO_CONTD, 0);
 		}
         else
@@ -3107,10 +3104,10 @@ void process(ENetPacket *packet, int sender, int chan)
                 mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
-            else if(strcmp(scl.adminpasswd, cl->pwd) && (!pd.denyadmin || (banned && !srvfull && !srvprivate)) && bantype != BAN_MASTER)
+            else if(strcmp(scl.adminpasswd, cl->pwd) && (banned && !srvfull && !srvprivate) && bantype != BAN_MASTER)
             { // admin (or deban) password match
                 cl->isauthed = true;
-                if(!pd.denyadmin && wantrole == CR_ADMIN) clientrole = CR_ADMIN;
+                if(wantrole == CR_ADMIN) clientrole = CR_ADMIN;
                 if(bantype == BAN_VOTE)
                 {
                     loopv(bans) if(bans[i].address.host == cl->peer->address.host) { bans.remove(i); concatstring(tags, ", ban removed"); break; } // remove admin bans
@@ -3123,7 +3120,7 @@ void process(ENetPacket *packet, int sender, int chan)
                         break;
                     }
                 }
-                mlog(ACLOG_INFO, "[%s] %s logged in using the admin password in line %d%s", cl->hostname, cl->name, pd.line, tags);
+                mlog(ACLOG_INFO, "[%s] %s logged in using the admin password", cl->hostname, cl->name);
             }
             else if(wantrole == CR_ADMIN && cl->checkvitadate(VS_ADMIN) && bantype != BAN_MASTER) // pass admins always through
             { // Set as admin in vita and is trying to connect as admin
@@ -4530,8 +4527,8 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
                 char hn[1024];
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 c.ip = ENET_NET_TO_HOST_32(c.peer->address.host);
-                //c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
-                const char *gi = geoiplist.check(c.ip);
+                c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
+                //const char *gi = geoiplist.check(c.ip);
                 //copystring(c.country, gi ? gi : "--", 3);
                 //filtercountrycode(c.country, c.country);
                 entropy_add_byte(c.ip);
@@ -4671,8 +4668,8 @@ void extinfo_statsbuf(ucharbuf &p, int pid, int bpos, ENetSocket &pongsock, ENet
         putint(p,ismatch ? 0 : clients[i]->state.gunselect);  //Gun selected
         putint(p,clients[i]->role);             //Role
         putint(p,clients[i]->state.state);      //State (Alive,Dead,Spawning,Lagged,Editing)
-        uint ip = clients[i]->peer->address.host; // only 3 byte of the ip address (privacy protected)
-        p.put((uchar*)&ip,3);
+        //uint ip = clients[i]->peer->address.host; // only 3 byte of the ip address (privacy protected)
+        //p.put((uchar*)&ip,3);
         putint(p,ismatch ? 0 : clients[i]->state.damage); //Damage
         putint(p,ismatch ? 0 : clients[i]->state.shotdamage); //Shot with damage
 
