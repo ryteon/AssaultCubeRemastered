@@ -205,8 +205,8 @@ int _setskin(int s, int t)
     return player1->skin(t);
 }
 
-COMMANDF(skin_cla, "i", (int *s) { intret(_setskin(*s, TEAM_CLA)); });
-COMMANDF(skin_rvsf, "i", (int *s) { intret(_setskin(*s, TEAM_RVSF)); });
+COMMANDF(skin_t, "i", (int *s) { intret(_setskin(*s, TEAM_T)); });
+COMMANDF(skin_ct, "i", (int *s) { intret(_setskin(*s, TEAM_CT)); });
 COMMANDF(skin, "i", (int *s) { intret(_setskin(*s, player1->team)); });
 
 void curmodeattr(char *attr)
@@ -288,8 +288,8 @@ void playerinfo(int *cn, const char *attr)
     ATTR_INT(alive, p->state == CS_ALIVE ? 1 : 0);
     ATTR_INT(spect, p->team == TEAM_SPECT || p->spectatemode == SM_FLY ? 1 : 0);
     ATTR_INT(cn, p->clientnum); // only useful to get player1's client number.
-    ATTR_INT(skin_cla, p->skin(TEAM_CLA));
-    ATTR_INT(skin_rvsf, p->skin(TEAM_RVSF));
+    ATTR_INT(skin_t, p->skin(TEAM_T));
+    ATTR_INT(skin_ct, p->skin(TEAM_CT));
     ATTR_INT(skin, p->skin(player1->team));
 
     string addrstr;
@@ -1494,7 +1494,7 @@ void scallvote(int *type, const char *arg1, const char *arg2)
             case SA_FORCETEAM:
             {
                 int team = atoi(arg2);
-                if(team < 0) arg2 = (team == 0) ? "RVSF" : "CLA";
+                if(team < 0) arg2 = (team == 0) ? "CT" : "T";
                 // fall through
             }
             default:

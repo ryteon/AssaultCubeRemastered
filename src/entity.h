@@ -96,7 +96,7 @@ static inline int magsize(int gun) { return guns[gun].magsize; }
 
 /** roseta stone:
        0000,         0001,      0010,           0011,            0100,       0101,     0110 */
-enum { TEAM_CLA = 0, TEAM_RVSF, TEAM_CLA_SPECT, TEAM_RVSF_SPECT, TEAM_SPECT, TEAM_NUM, TEAM_ANYACTIVE };
+enum { TEAM_T = 0, TEAM_CT, TEAM_T_SPECT, TEAM_CT_SPECT, TEAM_SPECT, TEAM_NUM, TEAM_ANYACTIVE };
 extern const char *teamnames[];
 extern const char *teamnames_s[];
 extern const char *killmessages[2][NUMGUNS];
@@ -106,10 +106,10 @@ extern const char *killmessages[2][NUMGUNS];
 #define team_base(t) ((t) & 1)
 #define team_basestring(t) ((t) == 1 ? teamnames[1] : ((t) == 0 ? teamnames[0] : "SPECT"))
 #define team_isvalid(t) ((int(t)) >= 0 && (t) < TEAM_NUM)
-#define team_isactive(t) ((t) == TEAM_CLA || (t) == TEAM_RVSF)
-#define team_isspect(t) ((t) > TEAM_RVSF && (t) < TEAM_NUM)
+#define team_isactive(t) ((t) == TEAM_T || (t) == TEAM_CT)
+#define team_isspect(t) ((t) > TEAM_CT && (t) < TEAM_NUM)
 #define team_group(t) ((t) == TEAM_SPECT ? TEAM_SPECT : team_base(t))
-#define team_tospec(t) ((t) == TEAM_SPECT ? TEAM_SPECT : team_base(t) + TEAM_CLA_SPECT - TEAM_CLA)
+#define team_tospec(t) ((t) == TEAM_SPECT ? TEAM_SPECT : team_base(t) + TEAM_T_SPECT - TEAM_T)
 // note: team_isactive and team_base can/should be used to check the limits for arrays of size '2'
 static inline const char *team_string(int t, bool abbr = false) { const char **n = abbr ? teamnames_s : teamnames; return team_isvalid(t) ? n[t] : n[TEAM_NUM + 1]; }
 
@@ -438,7 +438,7 @@ public:
 
     poshist history; // Previous stored locations of this player
 
-    const char *skin_noteam, *skin_cla, *skin_rvsf;
+    const char *skin_noteam, *skin_t, *skin_ct;
 
     float deltayaw, deltapitch, newyaw, newpitch;
     int smoothmillis;
@@ -460,7 +460,7 @@ public:
         aboveeye = 0.7f;
         radius = 1.1f;
         maxspeed = 14.0f;
-        skin_noteam = skin_cla = skin_rvsf = NULL;
+        skin_noteam = skin_t = skin_ct = NULL;
         loopi(2) nextskin[i] = 0;
         respawn();
     }

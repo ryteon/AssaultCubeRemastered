@@ -612,7 +612,7 @@ void changemastermode(int newmode)
         {
             loopv(clients) if(clients[i]->type!=ST_EMPTY && clients[i]->isauthed)
             {
-                if(clients[i]->team == TEAM_CLA_SPECT || clients[i]->team == TEAM_RVSF_SPECT) updateclientteam(i, TEAM_SPECT, FTR_SILENTFORCE);
+                if(clients[i]->team == TEAM_T_SPECT || clients[i]->team == TEAM_CT_SPECT) updateclientteam(i, TEAM_SPECT, FTR_SILENTFORCE);
             }
         }
         else if(sg->matchteamsize) changematchteamsize(sg->matchteamsize);
@@ -1732,16 +1732,16 @@ bool spamdetect(client *cl, char *text) // checks doubled lines and average typi
 // chat message distribution matrix:
 //
 // /------------------------ common chat          C c C c c C C c C
-// |/----------------------- RVSF chat            T
-// ||/---------------------- CLA chat                 T
+// |/----------------------- CT chat            T
+// ||/---------------------- T chat                 T
 // |||/--------------------- spect chat             t   t t T   t T
 // ||||                                           | | | | | | | | |
 // ||||                                           | | | | | | | | |      C: normal chat
 // ||||   team modes:                chat goes to | | | | | | | | |      T: team chat
-// XX     -->   RVSF players                >-----/ | | | | | | | |      c: normal chat in all mastermodes except 'match'
-// XX X   -->   RVSF spect players          >-------/ | | | | | | |      t: all chat in mastermode 'match', otherwise only team chat
-// X X    -->   CLA players                 >---------/ | | | | | |
-// X XX   -->   CLA spect players           >-----------/ | | | | |
+// XX     -->   CT players                >-----/ | | | | | | | |      c: normal chat in all mastermodes except 'match'
+// XX X   -->   CT spect players          >-------/ | | | | | | |      t: all chat in mastermode 'match', otherwise only team chat
+// X X    -->   T players                 >---------/ | | | | | |
+// X XX   -->   T spect players           >-----------/ | | | | |
 // X  X   -->   SPECTATORs                  >-------------/ | | | |
 // XXXX   -->   SPECTATORs (admin)          >---------------/ | | |
 //        ffa modes:                                          | | |
@@ -2031,7 +2031,7 @@ int canspawn(client *c)   // beware: canspawn() doesn't check m_arena!
     if(sg->mastermode == MM_MATCH && sg->matchteamsize)
     {
         if(c->team == TEAM_SPECT || (team_isspect(c->team) && !m_teammode)) return SP_SPECT;
-        if(c->team == TEAM_CLA_SPECT || c->team == TEAM_RVSF_SPECT)
+        if(c->team == TEAM_T_SPECT || c->team == TEAM_CT_SPECT)
         {
             if(numteamclients()[team_base(c->team)] >= sg->matchteamsize) return SP_SPECT;
             else return SP_REFILLMATCH;
@@ -2073,7 +2073,7 @@ bool updateclientteam(int cln, int newteam, int ftr)
         else
         {
             // join (autoteam => smaller || balanced => weaker(*)) team. (*): if theres enough data to establish strength, otherwise fallback to random
-            if(sg->autoteam && teamsizes[TEAM_CLA] != teamsizes[TEAM_RVSF]) newteam = teamsizes[TEAM_CLA] < teamsizes[TEAM_RVSF] ? TEAM_CLA : TEAM_RVSF;
+            if(sg->autoteam && teamsizes[TEAM_T] != teamsizes[TEAM_CT]) newteam = teamsizes[TEAM_T] < teamsizes[TEAM_CT] ? TEAM_T : TEAM_CT;
             else
             {
                 int teamscore[2] = {0, 0}, sum = calcscores(); // sum != 0 is either <0 if match data based or >0 vita based and exceeded shuffleteamthreshold
@@ -2081,7 +2081,7 @@ bool updateclientteam(int cln, int newteam, int ftr)
                 {
                     teamscore[team_base(clients[i]->team)] += clients[i]->at3_score;
                 }
-                newteam = sum==0 ? rnd(2) : (teamscore[TEAM_CLA] < teamscore[TEAM_RVSF] ? TEAM_CLA : TEAM_RVSF);
+                newteam = sum==0 ? rnd(2) : (teamscore[TEAM_T] < teamscore[TEAM_CT] ? TEAM_T : TEAM_CT);
             }
         }
     }
@@ -2149,7 +2149,7 @@ int calcscoresmatch() // match skill eval
     int nsp = 0; // no score players
     loopv(clients) if(clients[i]->type!=ST_EMPTY)
     {
-        if(clients[i]->team < TEAM_CLA_SPECT)
+        if(clients[i]->team < TEAM_T_SPECT)
         {
             clientstate &cs = clients[i]->state;
             int cskill = (cs.frags*100 + cs.enemyfire*2 + cs.goodflags*10) - (cs.deaths*50 + cs.friendlyfire*3 + cs.antiflags*15 + cs.teamkills*100 + cs.suicides*100);
@@ -2890,8 +2890,8 @@ void putinitclient(client &c, packetbuf &p)
     putint(p, SV_INITCLIENT);
     putint(p, c.clientnum);
     sendstring(c.name, p);
-    putint(p, c.skin[TEAM_CLA]);
-    putint(p, c.skin[TEAM_RVSF]);
+    putint(p, c.skin[TEAM_T]);
+    putint(p, c.skin[TEAM_CT]);
     putint(p, c.team);
     putint(p, c.maxroll);
     putint(p, c.maxrolleffect);

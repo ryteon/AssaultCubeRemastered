@@ -15,11 +15,7 @@ void cleanup(char *msg)         // single program exit point;
     SDL_SetRelativeMouseMode(SDL_FALSE);
     if(msg)
     {
-        #ifdef WIN32
-        MessageBox(NULL, msg, "AssaultCube fatal error", MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
-        #else
         printf("%s", msg);
-        #endif
         if(clientlogfile)
         {
             clientlogfile->printf("%s\n", msg);

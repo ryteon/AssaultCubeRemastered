@@ -108,7 +108,7 @@ struct teamscore
 
 void calcteamscores(int scores[4])
 {
-    teamscore teamscores[2] = { teamscore(TEAM_CLA), teamscore(TEAM_RVSF) };
+    teamscore teamscores[2] = { teamscore(TEAM_T), teamscore(TEAM_CT) };
     loopv(players) if(players[i] && players[i]->team != TEAM_SPECT)
     {
         teamscores[team_base(players[i]->team)].addplayer(players[i]);
@@ -301,12 +301,12 @@ void renderscores(void *menu, bool init)
     int winner = -1;
     if(m_teammode)
     {
-        teamscore teamscores[2] = { teamscore(TEAM_CLA), teamscore(TEAM_RVSF) };
+        teamscore teamscores[2] = { teamscore(TEAM_T), teamscore(TEAM_CT) };
 
         loopv(scores) if(scores[i]->team != TEAM_SPECT) teamscores[team_base(scores[i]->team)].addplayer(scores[i]);
         loopv(discscores) if(discscores[i].team != TEAM_SPECT) teamscores[team_base(discscores[i].team)].addscore(discscores[i]);
 
-        int sort = teamscorecmp(&teamscores[TEAM_CLA], &teamscores[TEAM_RVSF]) < 0 ? 0 : 1;
+        int sort = teamscorecmp(&teamscores[TEAM_T], &teamscores[TEAM_CT]) < 0 ? 0 : 1;
         loopi(2)
         {
             renderteamscore(&teamscores[sort ^ i]);
@@ -360,8 +360,8 @@ void renderscores(void *menu, bool init)
             {
                 switch(winner)
                 {
-                    case TEAM_CLA: concatstring(modeline, ", \f3CLA wins!"); break;
-                    case TEAM_RVSF: concatstring(modeline, ", \f1RVSF wins!"); break;
+                    case TEAM_T: concatstring(modeline, ", \f3Terrorists win!"); break;
+                    case TEAM_CT: concatstring(modeline, ", \f1Counter-Terrorists win!"); break;
                     case -1:
                     default:
                         concatstring(modeline, ", \f2it's a tie!");
@@ -517,13 +517,13 @@ void winners()
 
     if(m_teammode)
     {
-        teamscore teamscores[2] = { teamscore(TEAM_CLA), teamscore(TEAM_RVSF) };
+        teamscore teamscores[2] = { teamscore(TEAM_T), teamscore(TEAM_CT) };
 
         loopv(scores) if(scores[i]->team != TEAM_SPECT) teamscores[team_base(scores[i]->team)].addplayer(scores[i]);
         loopv(discscores) if(discscores[i].team != TEAM_SPECT)
         teamscores[team_base(discscores[i].team)].addscore(discscores[i]);
 
-        int sort = teamscorecmp(&teamscores[TEAM_CLA], &teamscores[TEAM_RVSF]);
+        int sort = teamscorecmp(&teamscores[TEAM_T], &teamscores[TEAM_CT]);
         if(!sort) copystring(winners, "0 1");
         else itoa(winners, sort < 0 ? 0 : 1);
     }
