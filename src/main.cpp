@@ -1191,7 +1191,7 @@ static char *parsecommandline(const char *src, vector<char *> &args)
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 {
     vector<char *> args;
-    char *buf = parsecommandline(GetCommandLine(), args);
+    char *buf = parsecommandline((const char *)GetCommandLine(), args);
     int status = main(args.length()-1, args.getbuf());
     delete[] buf;
     exit(status);
