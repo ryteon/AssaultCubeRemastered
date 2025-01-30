@@ -112,7 +112,7 @@ bool fileexists(const char *path, const char *mode)
     bool exists = true;
     if(mode[0]=='w' || mode[0]=='a') path = parentdir(path);
 #ifdef WIN32
-    if(GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES) exists = false;
+    if(GetFileAttributes((const wchar_t *)path) == INVALID_FILE_ATTRIBUTES) exists = false;
 #else
     if(access(path, R_OK | (mode[0]=='w' || mode[0]=='a' ? W_OK : 0)) == -1) exists = false;
 #endif
@@ -130,7 +130,7 @@ bool createdir(const char *path)
 		path = strip;
     }
 #ifdef WIN32
-    return CreateDirectory(path, NULL)!=0;
+    return CreateDirectory((const wchar_t*)path, NULL)!=0;
 #else
     return mkdir(path, 0777)==0;
 #endif
@@ -155,10 +155,10 @@ char *getregszvalue(HKEY root, const char *keystr, const char *query)
     if(RegOpenKeyEx(HKEY_CURRENT_USER, keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
     {
         DWORD type = 0, len = 0;
-        if(RegQueryValueEx(key, query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
+        if(RegQueryValueEx(key, (const wchar_t *)query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
         {
             char *val = new char[len];
-            long result = RegQueryValueEx(key, query, 0, &type, (uchar *)val, &len);
+            long result = RegQueryValueEx(key, (const wchar_t *)query, 0, &type, (uchar *)val, &len);
             if(result==ERROR_SUCCESS)
             {
                 RegCloseKey(key);
@@ -369,7 +369,7 @@ bool listdir(const char *dir, const char *ext, vector<char *> &files)
     {
         do {
             if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-                files.add(newstring((size_t)FindFileData.cFileName, (int)strlen((const char *)FindFileData.cFileName) - extsize));
+                files.add(newstring((const char *)FindFileData.cFileName, (int)strlen((const char *)FindFileData.cFileName) - extsize));
         } while(FindNextFile(Find, &FindFileData));
         FindClose(Find);
         return true;
