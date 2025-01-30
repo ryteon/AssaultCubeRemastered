@@ -152,7 +152,7 @@ size_t fixpackagedir(char *dir)
 char *getregszvalue(HKEY root, const char *keystr, const char *query)
 {
     HKEY key;
-    if(RegOpenKeyEx(HKEY_CURRENT_USER, keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
+    if(RegOpenKeyEx(HKEY_CURRENT_USER, (const wchar_t *)keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
     {
         DWORD type = 0, len = 0;
         if(RegQueryValueEx(key, (const wchar_t *)query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
@@ -297,11 +297,11 @@ bool listsubdir(const char *dir, vector<char *> &subdirs)
     #if defined(WIN32)
     defformatstring(pathname)("%s\\*", dir);
     WIN32_FIND_DATA FindFileData;
-    HANDLE Find = FindFirstFile(path(pathname), &FindFileData);
+    HANDLE Find = FindFirstFile((LPCWSTR)path(pathname), &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
     {
         do {
-            if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && FindFileData.cFileName[0] != '.') subdirs.add(newstring(FindFileData.cFileName));
+            if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && FindFileData.cFileName[0] != '.') subdirs.add(newstring((const char *)FindFileData.cFileName));
         } while(FindNextFile(Find, &FindFileData));
         FindClose(Find);
         return true;
