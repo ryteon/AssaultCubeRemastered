@@ -1,5 +1,3 @@
-#pragma once
-
 // Ed25519: high-speed high-security signatures
 
 //   Contributors (alphabetical order)

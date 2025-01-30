@@ -1,5 +1,3 @@
-#pragma once
-
 #define MAXCLIENTS 256                  // in a multiplayer game, can be arbitrarily changed
 #define MAXPLAYERS 32                   // in a multiplayer game, can be arbitrarily changed
 #define DEFAULTCLIENTS 6

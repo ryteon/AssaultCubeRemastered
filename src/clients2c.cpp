@@ -35,9 +35,8 @@ extern void trydisconnect();
 
 bool localwrongmap = false;
 
-bool changemapserv(char *name, int mode, int download, int revision) // forced map change from the server
+bool changemapserv(char *name, int mode, int download, int revision)        // forced map change from the server
 {
-    conoutf("\f3map name: %s", name);
     gamemode = mode;
     if(m_demo) return true;
     if(m_coop)
@@ -117,7 +116,7 @@ void parsepositions(ucharbuf &p)
     int type;
     while(p.remaining()) switch(type = getint(p))
     {
-        case SV_POS: // position of another client
+        case SV_POS:                        // position of another client
         case SV_POSC:
         case SV_POSC2:
         case SV_POSC3:
@@ -251,7 +250,7 @@ VARP(voicecomsounds, 0, 1, 2);
 struct session_s
 {
     enet_uint32 serverip, clientip, clientipcensored, curpeerip;
-    int curpeerport, serverclock, clientclock, cn, datecodes;
+    int curpeerport, serverclock, clientclock, cn, clientsalt, datecodes;
     uchar serverpubkey[32], clientsignature[64];
     string clan, publiccomment;
 } session;
@@ -280,18 +279,20 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
 
         switch(type)
         {
-            case SV_SERVINFO: // welcome message from the server
+            case SV_SERVINFO:  // welcome message from the server
             {
+                string tmp1, tmp2;
                 session_s *s = &session;
                 memset(s, 0, sizeof(session_s));
 
                 s->cn = getint(p);
-                conoutf("clientnum: %d", s->cn);
                 int prot = getint(p);
-                conoutf("protocol: %d", prot);
-                if(prot != 31)
+                if(prot!=CUR_PROTOCOL_VERSION && !(watchingdemo && prot == -PROTOCOL_VERSION))
                 {
-                    conoutf("\f3incompatible game protocol (local protocol: %d :: server protocol: %d)", 31, prot);
+                    conoutf("\f3incompatible game protocol (local protocol: %d :: server protocol: %d)", CUR_PROTOCOL_VERSION, prot);
+                    conoutf("\f3if this occurs a lot, obtain an upgrade from \f1http://assault.cubers.net");
+                    if(watchingdemo) conoutf("breaking loop : \f3this demo is using a different protocol\f5 : end it now!"); // SVN-WiP-bug: causes endless retry loop else!
+                    else disconnect();
                     return;
                 }
                 s->serverip = getip4(p);
@@ -490,7 +491,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 d->maxrolleffect = (float)clamp(getint(p), 0, ROLLEFFMAX);
                 d->ffov = (float)clamp(getint(p), 75, 120);
                 d->scopefov = (float)clamp(getint(p), 5, 60);
-                //d->address = getint(p); // partial IP address
+                d->address = getint(p); // partial IP address
 
                 if(m_flags_) loopi(2)
                 {
@@ -1309,7 +1310,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
             }
 
             default:
-                //neterr("type");
+                neterr("type");
                 return;
         }
     }

@@ -1,5 +1,3 @@
-#pragma once
-
 VARP(nosway, 0, 0, 1);
 VARP(swayspeeddiv, 1, 105, 1000);
 VARP(swaymovediv, 1, 200, 1000);

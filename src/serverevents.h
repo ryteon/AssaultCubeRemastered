@@ -1,5 +1,3 @@
-#pragma once
-
 // processing of server events
 
 void processevent(client *c, explodeevent &e)

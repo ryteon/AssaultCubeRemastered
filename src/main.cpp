@@ -1498,6 +1498,9 @@ int main(int argc, char **argv)
     execfile("config/autoexec.cfg");
     exechook(HOOK_SP_MP, "autoexec", "");
 
+
+
+
     initing = NOT_INITING;
     uniformtexres = !hirestextures;
 

@@ -120,6 +120,63 @@ int wizardmain(int argc, char **argv)
     printf("Done\n\n");
     printf("Note: You can start %s directly the next time you want to use the same configuration to start the server.\n\n", outfile);
 
+#ifdef WIN32
+
+    if(wsname[0])
+    {
+        if(!wsdisplayname[0]) copystring(wsdisplayname, wsname);
+
+        printf("Installing the AC Server as windows service ... "); fflush(stdout);
+
+        vector<char> path;
+        databuf<char> cwd = path.reserve(MAX_PATH);
+        if(!_getcwd(cwd.buf, MAX_PATH))
+        {
+            printf("Failed!\n");
+            printf("Could not get current working directory: %u\n", (uint)GetLastError());
+            return EXIT_FAILURE;
+        }
+        path.advance(strlen(cwd.buf));
+        path.add('\\');
+        path.put(relpath, strlen(relpath));
+        path.put(" -S", 3);
+        path.put(wsname, strlen(wsname));
+        path.add(' ');
+        path.put(argstr.getbuf(), argstr.length());
+
+        winserviceinstaller installer(wsname, wsdisplayname, path.getbuf());
+
+        int r;
+        if(!installer.OpenManger())
+        {
+            printf("Failed!\n");
+            printf("Could not open the Service Control Manager: %u\n", (uint)GetLastError());
+            installer.CloseManager();
+            return EXIT_FAILURE;
+        }
+
+        if((r = installer.IsInstalled()) != 0)
+        {
+            printf("Failed!\n");
+            if(r == -1) printf("Error accessing the Service Control Manager\n");
+            else if(r == 1) printf("A windows service with this name (%s) is already installed: %u\n", wsname, (uint)GetLastError());
+            return EXIT_FAILURE;
+        }
+
+        if((r = installer.Install()) != 1)
+        {
+            printf("Failed!\n");
+            if(r == -1) printf("Error accessing the Service Control Manager\n");
+            else if(r == 0) printf("Could not create the new windows service: %u\n", (uint)GetLastError());
+            return EXIT_FAILURE;
+        }
+
+        printf("Done\n\n");
+        printf("Note: You can now manage your AC server using services.msc and sc.exe\n\n");
+    }
+
+#endif
+
     printf("Please press ENTER now to start your server...\n");
     fgetc(stdin);
     printf("Starting the AC server ...\n");

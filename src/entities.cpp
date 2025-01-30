@@ -5,7 +5,7 @@
 VARP(showclips, 0, 1, 1);
 VARP(showmodelclipping, 0, 0, 1);
 VARP(showladderentities, 0, 0, 1);
-VARP(showplayerstarts, 0, 1, 1); // render player models with spawn-type appropriate skins (T:red,CT:blue,FFA:green)
+VARP(showplayerstarts, 0, 1, 1); // render player models with spawn-type appropriate skins (CLA:red,RVSF:blue,FFA:green)
 
 void toucheditingsettings(bool forcerestart){
     if(showeditingsettings)
@@ -271,8 +271,8 @@ void rendereditentities()
                     const char *skin = "packages/models/playermodels/unknownspawn.jpg";
                     switch(e.attr2)
                     {
-                        case 0: skin = "packages/models/playermodels/T/red.jpg"; break;
-                        case 1: skin = "packages/models/playermodels/CT/blue.jpg"; break;
+                        case 0: skin = "packages/models/playermodels/CLA/red.jpg"; break;
+                        case 1: skin = "packages/models/playermodels/RVSF/blue.jpg"; break;
                         case 100: skin = "packages/models/playermodels/ffaspawn.jpg"; break;
                     }
                     rendermodel("playermodels", ANIM_IDLE, -(int)textureload(skin)->id, 1.5f, o, 0, e.attr1 / ENTSCALE10 + 90, 0);
@@ -682,8 +682,8 @@ void entstats_(void)
     {
         case MAPMODEL:      conoutf(" %d %s, %d clipped, %s%d unconfigured", es.entcnt[i], entnames[i], clipents, xmodels ? "\f3" : "", xmodels); break;
         case SOUND:         conoutf(" %d %s, %s%d unconfigured", es.entcnt[i], entnames[i], xsounds ? "\f3" : "", xsounds); break;
-        case PLAYERSTART:   conoutf(" %d %s, %d T, %d CT, %d FFA%c \f3unknown %d", es.entcnt[i], entnames[i], es.spawns[0], es.spawns[1], es.spawns[2], es.unknownspawns ? ',' : '\0', es.unknownspawns); break;
-        case CTF_FLAG:      conoutf(" %d %s, %d T, %d CT%c \f3unknown %d", es.entcnt[i], entnames[i], es.flags[0], es.flags[1], es.unknownflags ? ',' : '\0', es.unknownflags); break;
+        case PLAYERSTART:   conoutf(" %d %s, %d CLA, %d RVSF, %d FFA%c \f3unknown %d", es.entcnt[i], entnames[i], es.spawns[0], es.spawns[1], es.spawns[2], es.unknownspawns ? ',' : '\0', es.unknownspawns); break;
+        case CTF_FLAG:      conoutf(" %d %s, %d CLA, %d RVSF%c \f3unknown %d", es.entcnt[i], entnames[i], es.flags[0], es.flags[1], es.unknownflags ? ',' : '\0', es.unknownflags); break;
         case CLIP:
         case PLCLIP:        concatformatstring(clips, ", %d %s", es.entcnt[i], entnames[i]); break;
         case NOTUSED:       conoutf(" %d deleted", es.entcnt[i]); break;

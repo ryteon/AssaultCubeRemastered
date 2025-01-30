@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CUBE_H__
+#define __CUBE_H__
 
 #include "platform.h"
 #include "tools.h"
@@ -81,3 +82,6 @@ extern float waterlevel;
 #define DEFAULT_SHADOWYAW 45
 
 #include "protos.h"                     // external function decls
+
+#endif
+

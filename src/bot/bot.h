@@ -36,7 +36,8 @@
      -Check/Fix msg code
 */
 
-#pragma once
+#ifndef BOT_H
+#define BOT_H
 
 #ifndef RELEASE_BUILD
 #define RELEASE_BUILD // Set when you want to make a release build
@@ -395,3 +396,5 @@ extern CBotManager BotManager;
 extern const vec g_vecZero;
 extern CACWaypointClass WaypointClass;
 extern void kickallbots();
+
+#endif

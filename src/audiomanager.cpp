@@ -266,6 +266,8 @@ void audiomanager::setchannels(int num)
     if(!nosound) sourcescheduler::instance().init(num);
 };
 
+
+
 // called at game exit
 void audiomanager::soundcleanup()
 {

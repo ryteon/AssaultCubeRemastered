@@ -177,6 +177,7 @@ target_include_directories(AssaultCube-Client PRIVATE ${CLIENT_LIBRARY_INCLUDES}
 
 target_link_libraries(AssaultCube-Client ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${OGG_LIBRARIES} ${OPENAL_LIBRARY} ${OPENGL_LIBRARIES} ${X11_LIBRARIES} ${ENet_LIBRARIES} SDL2_image::SDL2_image ${VORBIS_LIBRARIES} SDL2::SDL2)
 
+target_link_libraries(AssaultCube-Client -lmingw32 -mwindows)
 #target_link_options(AssaultCube-Client PRIVATE -mwindows)
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 set_target_properties(AssaultCube-Client PROPERTIES WIN32_EXECUTABLE FALSE)

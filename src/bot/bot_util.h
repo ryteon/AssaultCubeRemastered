@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BOT_UTIL_H
+#define BOT_UTIL_H
 
 // Structure for storing traceresults
 struct traceresult_s
@@ -559,3 +560,9 @@ public:
           return false;
      }
 };
+
+// ==================================================================
+// Code of TMutiChoice - End
+// ==================================================================
+
+#endif

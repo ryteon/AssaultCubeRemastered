@@ -894,7 +894,7 @@ botent *CBotManager::CreateBot(const char *team, const char *skill, const char *
 
     const char *tempteam = team && *team && strcmp(team, "random") ? team : BotManager.GetBotTeam();
     m->team = team_base(teamatoi(tempteam));
-    setskin(m, m->team  == TEAM_T ? rnd(4) : rnd(6), m->team);
+    setskin(m, m->team  == TEAM_CLA ? rnd(4) : rnd(6), m->team);
 
     if (skill && *skill && strcmp(skill, "random"))
     {

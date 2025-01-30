@@ -1,5 +1,3 @@
-#pragma once
-
 // protos for ALL external functions in cube...
 
 struct authkey
@@ -1318,3 +1316,4 @@ struct servercommandline
         return true;
     }
 };
+

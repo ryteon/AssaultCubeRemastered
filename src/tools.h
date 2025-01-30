@@ -1,6 +1,7 @@
-#pragma once
-
 // generic useful stuff for any C++ program
+
+#ifndef _TOOLS_H
+#define _TOOLS_H
 
 #ifdef NULL
 #undef NULL
@@ -1012,3 +1013,5 @@ inline void fnv1a_add(uint32_t &hash, uchar byte)
     hash ^= byte;
     hash *= 16777619;
 }
+
+#endif

@@ -1,5 +1,3 @@
-#pragma once
-
 // hardcoded sounds, details in server.h
 
 enum

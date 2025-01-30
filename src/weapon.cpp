@@ -858,8 +858,8 @@ void raydamage(vec &from, vec &to, playerent *d)
             //case GUN_SNIPER: if(d==player1 && hitzone==2) { dam *= 3; gib = true; }; break;
             default: break;
         }
-        bool info = gib;
         if (hitzone==2) dam *= 4;
+        bool info = gib;
         hitpush(dam, o, d, from, to, d->weaponsel->type, gib, info ? 1 : 0);
         if(d == player1) hit = true;
         shorten(from, to, distsquared);

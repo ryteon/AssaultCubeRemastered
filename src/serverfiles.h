@@ -1,5 +1,3 @@
-#pragma once
-
 // serverfiles.h
 
 // abuse globals to register server parameters
@@ -892,10 +890,11 @@ struct servermaprot : serverconfigfile
             configset c, cempty;
             memset(&cempty, 0, sizeof(cempty));
             cempty.empty();
+            int line = 0;
             char *b, *l, *p = buf;
             while(p < buf + filelen)
             {
-                l = p; p += strlen(p) + 1;
+                l = p; p += strlen(p) + 1; line++;
                 l = strtok_r(l, " ", &b);
                 if(l)
                 {
@@ -1813,11 +1812,12 @@ struct serverparameter : serverconfigfile
     {
         if(serverconfigfile::load())
         {
+            int line = 0;
             char *b, *l, *p = buf, *kb, *k, *v;
             servpar *id;
             while(p < buf + filelen)
             {
-                l = p; p += strlen(p) + 1;
+                l = p; p += strlen(p) + 1; line++;
                 l = strtok_r(l, " ", &b);
                 if(l && (k = strtok_r(l, ":", &kb)) && (v = strtok_r(NULL, ":", &kb)) && (id = servpars->access(k)) && id->fromfile)
                 {

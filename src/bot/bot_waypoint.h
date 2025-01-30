@@ -7,10 +7,11 @@
 // Author: Rick Helmus <rickhelmus@gmail.com>
 //
 
-#pragma once
-
 // Enable this for flood support
 #define WP_FLOOD
+
+#ifndef BOT_WAYPOINT_H
+#define BOT_WAYPOINT_H
 
 #define WAYPOINT_VERSION 2
 #define EXP_WP_VERSION 1
@@ -174,3 +175,5 @@ public:
      virtual void StartFlood(void);
 #endif
 };
+
+#endif // BOT_WAYPOINT_H

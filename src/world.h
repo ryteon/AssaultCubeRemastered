@@ -1,6 +1,4 @@
-#pragma once
-
-enum                            // block types
+enum                            // block types, order matters!
 {
     SOLID = 0,                  // entirely solid cube [only specifies wtex]
     CORNER,                     // half full corner of a wall

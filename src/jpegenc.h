@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JPEGENC
+#define JPEGENC
 
 // Toca: JPEG encoder, jpeglib independent  ***EXPERIMENTAL***
 // Based on work by Cristian Cuturicu
@@ -887,3 +888,6 @@ int jpegenc::encode(const char *filename, SDL_Surface *image, int jpegquality, c
     delete fp_jpeg_stream;
     return 0;
 };
+
+#endif
+

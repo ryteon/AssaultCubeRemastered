@@ -1505,6 +1505,18 @@ void listcerts()
 COMMAND(listcerts, "");
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
 /////////////////// misc helper functions ////////////////////////////////////////////////////////////////
 
 static const char *hashchunktoa(tiger::chunk h)   // portable solution instead of printf("%llx")
@@ -1531,3 +1543,7 @@ const char *genpwdhash(const char *name, const char *pwd, int salt)
     formatstring(temp)("%s %s %s", hashchunktoa(hash.chunks[0]), hashchunktoa(hash.chunks[1]), hashchunktoa(hash.chunks[2]));
     return temp;
 }
+
+
+
+

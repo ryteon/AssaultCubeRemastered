@@ -10,7 +10,8 @@
 //
 //
 
-#pragma once
+#ifndef AC_BOT_H
+#define AC_BOT_H
 
 //#define BOTDEBUG
 #define MAX_WEAPONS      9 // NUM_GUNS
@@ -44,3 +45,5 @@ inline void AddDebugText(const char *t, ...)
     va_end(v);
 #endif
 }
+
+#endif

@@ -1,5 +1,3 @@
-#pragma once
-
 struct cline { char *line; int millis; };
 
 template<class LINE> struct consolebuffer

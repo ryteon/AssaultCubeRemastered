@@ -92,7 +92,7 @@ serveripblacklist ipblacklist;
 serveripcclist geoiplist;
 servernickblacklist nickblacklist;
 serverforbiddenlist forbiddenlist;
-//serverpasswords passwords;
+serverpasswords passwords;
 serverinfofile serverinfoinfo;
 serverinfofile serverinfomotd;
 
@@ -612,7 +612,7 @@ void changemastermode(int newmode)
         {
             loopv(clients) if(clients[i]->type!=ST_EMPTY && clients[i]->isauthed)
             {
-                if(clients[i]->team == TEAM_T_SPECT || clients[i]->team == TEAM_CT_SPECT) updateclientteam(i, TEAM_SPECT, FTR_SILENTFORCE);
+                if(clients[i]->team == TEAM_CLA_SPECT || clients[i]->team == TEAM_RVSF_SPECT) updateclientteam(i, TEAM_SPECT, FTR_SILENTFORCE);
             }
         }
         else if(sg->matchteamsize) changematchteamsize(sg->matchteamsize);
@@ -1732,16 +1732,16 @@ bool spamdetect(client *cl, char *text) // checks doubled lines and average typi
 // chat message distribution matrix:
 //
 // /------------------------ common chat          C c C c c C C c C
-// |/----------------------- CT chat            T
-// ||/---------------------- T chat                 T
+// |/----------------------- RVSF chat            T
+// ||/---------------------- CLA chat                 T
 // |||/--------------------- spect chat             t   t t T   t T
 // ||||                                           | | | | | | | | |
 // ||||                                           | | | | | | | | |      C: normal chat
 // ||||   team modes:                chat goes to | | | | | | | | |      T: team chat
-// XX     -->   CT players                >-----/ | | | | | | | |      c: normal chat in all mastermodes except 'match'
-// XX X   -->   CT spect players          >-------/ | | | | | | |      t: all chat in mastermode 'match', otherwise only team chat
-// X X    -->   T players                 >---------/ | | | | | |
-// X XX   -->   T spect players           >-----------/ | | | | |
+// XX     -->   RVSF players                >-----/ | | | | | | | |      c: normal chat in all mastermodes except 'match'
+// XX X   -->   RVSF spect players          >-------/ | | | | | | |      t: all chat in mastermode 'match', otherwise only team chat
+// X X    -->   CLA players                 >---------/ | | | | | |
+// X XX   -->   CLA spect players           >-----------/ | | | | |
 // X  X   -->   SPECTATORs                  >-------------/ | | | |
 // XXXX   -->   SPECTATORs (admin)          >---------------/ | | |
 //        ffa modes:                                          | | |
@@ -2031,7 +2031,7 @@ int canspawn(client *c)   // beware: canspawn() doesn't check m_arena!
     if(sg->mastermode == MM_MATCH && sg->matchteamsize)
     {
         if(c->team == TEAM_SPECT || (team_isspect(c->team) && !m_teammode)) return SP_SPECT;
-        if(c->team == TEAM_T_SPECT || c->team == TEAM_CT_SPECT)
+        if(c->team == TEAM_CLA_SPECT || c->team == TEAM_RVSF_SPECT)
         {
             if(numteamclients()[team_base(c->team)] >= sg->matchteamsize) return SP_SPECT;
             else return SP_REFILLMATCH;
@@ -2073,7 +2073,7 @@ bool updateclientteam(int cln, int newteam, int ftr)
         else
         {
             // join (autoteam => smaller || balanced => weaker(*)) team. (*): if theres enough data to establish strength, otherwise fallback to random
-            if(sg->autoteam && teamsizes[TEAM_T] != teamsizes[TEAM_CT]) newteam = teamsizes[TEAM_T] < teamsizes[TEAM_CT] ? TEAM_T : TEAM_CT;
+            if(sg->autoteam && teamsizes[TEAM_CLA] != teamsizes[TEAM_RVSF]) newteam = teamsizes[TEAM_CLA] < teamsizes[TEAM_RVSF] ? TEAM_CLA : TEAM_RVSF;
             else
             {
                 int teamscore[2] = {0, 0}, sum = calcscores(); // sum != 0 is either <0 if match data based or >0 vita based and exceeded shuffleteamthreshold
@@ -2081,7 +2081,7 @@ bool updateclientteam(int cln, int newteam, int ftr)
                 {
                     teamscore[team_base(clients[i]->team)] += clients[i]->at3_score;
                 }
-                newteam = sum==0 ? rnd(2) : (teamscore[TEAM_T] < teamscore[TEAM_CT] ? TEAM_T : TEAM_CT);
+                newteam = sum==0 ? rnd(2) : (teamscore[TEAM_CLA] < teamscore[TEAM_RVSF] ? TEAM_CLA : TEAM_RVSF);
             }
         }
     }
@@ -2149,7 +2149,7 @@ int calcscoresmatch() // match skill eval
     int nsp = 0; // no score players
     loopv(clients) if(clients[i]->type!=ST_EMPTY)
     {
-        if(clients[i]->team < TEAM_T_SPECT)
+        if(clients[i]->team < TEAM_CLA_SPECT)
         {
             clientstate &cs = clients[i]->state;
             int cskill = (cs.frags*100 + cs.enemyfire*2 + cs.goodflags*10) - (cs.deaths*50 + cs.friendlyfire*3 + cs.antiflags*15 + cs.teamkills*100 + cs.suicides*100);
@@ -2430,8 +2430,6 @@ void startgame(const char *newname, int newmode, int newtime, bool notify)
         if(notify)
         {
             // change map
-            //conoutf("\f3change map: %s", sg->smapname);
-            mlog(ACLOG_INFO, "change map: %s", sg->smapname);
             sendf(-1, 1, "risiiii", SV_MAPCHANGE, sg->smapname, sg->smode, sm && sm->isdistributable() ? sm->cgzlen : 0, sm && sm->isdistributable() ? sm->maprevision : 0, sg->srvgamesalt);
             if(sg->smode != GMODE_DEMO && sg->smode != GMODE_COOPEDIT) sendf(-1, 1, "ri3", SV_TIMEUP, sg->gamemillis, sg->gamelimit);
         }
@@ -2664,6 +2662,7 @@ bool scallvote(voteinfo *v, ENetPacket *msg) // true if a regular vote was calle
     if ( c->nvotes < 0 || c->role == CR_ADMIN ) c->nvotes = 0;
     c->nvotes++;
 
+
     if( !v || !v->isvalid() || (v->boot && (!b || cn2boot == v->owner) ) ) error = VOTEE_INVALID;
     else if( v->action->role > c->role ) error = VOTEE_PERMISSION;
     else if( !(area & v->action->area) ) error = VOTEE_AREA;
@@ -2696,7 +2695,7 @@ bool scallvote(voteinfo *v, ENetPacket *msg) // true if a regular vote was calle
     }
 }
 
-void callvotepacket(int cn, voteinfo *v = curvote)
+void callvotepacket (int cn, voteinfo *v = curvote)
 { // FIXME, it would be far smart if the msg buffer from SV_CALLVOTE was simply saved
     int n_yes = 0, n_no = 0;
     loopv(clients) if(clients[i]->type!=ST_EMPTY)
@@ -2749,12 +2748,14 @@ void callvotepacket(int cn, voteinfo *v = curvote)
 
 void changeclientrole(int client, int role, char *pwd, bool force)
 {
+    pwddetail pd;
     bool success = false;
     if(!isdedicated || !valid_client(client)) return;
+    pd.line = -1;
     if(role == clients[client]->role) return;
-    if(role == CR_ADMIN && pwd && pwd[0] && !strcmp(scl.adminpasswd, pwd))
+    if(role == CR_ADMIN && pwd && pwd[0] && passwords.check(clients[client]->name, pwd, clients[client]->salt, &pd) && !pd.denyadmin)
     {
-        mlog(ACLOG_INFO,"[%s] player %s used admin password", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]");
+        mlog(ACLOG_INFO,"[%s] player %s used admin password in line %d", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", pd.line);
         success = true;
     }
     if(clients[client]->checkvitadate(VS_ADMIN))
@@ -2880,8 +2881,8 @@ bool restorescore(client &c)
 
 void sendservinfo(client &c)
 {
-    //sendf(c.clientnum, 1, "ri6IIIi3k", SV_SERVINFO, c.clientnum, isdedicated ? SERVER_PROTOCOL_VERSION : PROTOCOL_VERSION, scl.serverpassword[0] ? 1 : 0, servownip, c.ip, c.ip_censored, (c.connectclock = servclock), c.country[0], c.country[1], spk);
-	sendf(c.clientnum, 1, "ri4IIIk", SV_SERVINFO, c.clientnum, 31, 69, servownip, c.ip, c.ip_censored, spk);
+    //sendf(c.clientnum, 1, "ri6IIIi3k", SV_SERVINFO, c.clientnum, isdedicated ? SERVER_PROTOCOL_VERSION : PROTOCOL_VERSION, c.needsauth ? 1 : 0, scl.serverpassword[0] ? 1 : 0, c.salt, servownip, c.ip, c.ip_censored, (c.connectclock = servclock), c.country[0], c.country[1], spk);
+    sendf(c.clientnum, 1, "ri3IIIk", SV_SERVINFO, c.clientnum, isdedicated ? SERVER_PROTOCOL_VERSION : PROTOCOL_VERSION, servownip, c.ip, c.ip_censored, spk);
 }
 
 void putinitclient(client &c, packetbuf &p)
@@ -2889,8 +2890,8 @@ void putinitclient(client &c, packetbuf &p)
     putint(p, SV_INITCLIENT);
     putint(p, c.clientnum);
     sendstring(c.name, p);
-    putint(p, c.skin[TEAM_T]);
-    putint(p, c.skin[TEAM_CT]);
+    putint(p, c.skin[TEAM_CLA]);
+    putint(p, c.skin[TEAM_RVSF]);
     putint(p, c.team);
     putint(p, c.maxroll);
     putint(p, c.maxrolleffect);
@@ -2928,7 +2929,6 @@ void welcomepacket(packetbuf &p, int n)
     if(sg->smapname[0] && !m_demo)
     {
         putint(p, SV_MAPCHANGE);
-        mlog(ACLOG_INFO, "change map: %s", sg->smapname);
         sendstring(sg->smapname, p);
         putint(p, sg->smode);
         putint(p, sg->curmap && sg->curmap->isdistributable() ? sg->curmap->cgzlen : 0);
@@ -3040,6 +3040,7 @@ void process(ENetPacket *packet, int sender, int chan)
     ucharbuf p(packet->data, packet->dataLength);
     char text[MAXTRANS];
     client *cl = sender>=0 ? clients[sender] : NULL;
+    pwddetail pd;
     int type;
 
     if(cl && !cl->isauthed)
@@ -3047,7 +3048,7 @@ void process(ENetPacket *packet, int sender, int chan)
         int clientrole = CR_DEFAULT;
 
         if(chan==0) return;
-        else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) return; //disconnect_client(sender, DISC_TAGT);
+        else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) disconnect_client(sender, DISC_TAGT);
         else
         { // SV_CONNECT
             cl->acversion = getint(p);
@@ -3085,8 +3086,6 @@ void process(ENetPacket *packet, int sender, int chan)
                 concatstring(tags, ", vita whitelist match");
                 banned = false;
             }
-            
-            mlog(ACLOG_INFO, "admin password: %s, client password: %s", scl.adminpasswd, cl->pwd);
 
             if(matchreconnect && !banned)
             { // former player reconnecting to a server in match mode
@@ -3103,11 +3102,11 @@ void process(ENetPacket *packet, int sender, int chan)
                 mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
-            else if(!strcmp(scl.adminpasswd, cl->pwd))
+            else if(!strcmp(scl.adminpasswd, cl->pwd) && (!pd.denyadmin || (banned && !srvfull && !srvprivate)) && bantype != BAN_MASTER) // pass admins always through
             { // admin (or deban) password match
                 cl->isauthed = true;
-                if(wantrole == CR_ADMIN) clientrole = CR_ADMIN;
-                if(banned && bantype == BAN_VOTE)
+                if(!pd.denyadmin && wantrole == CR_ADMIN) clientrole = CR_ADMIN;
+                if(bantype == BAN_VOTE)
                 {
                     loopv(bans) if(bans[i].address.host == cl->peer->address.host) { bans.remove(i); concatstring(tags, ", ban removed"); break; } // remove admin bans
                 }
@@ -3119,7 +3118,7 @@ void process(ENetPacket *packet, int sender, int chan)
                         break;
                     }
                 }
-                mlog(ACLOG_INFO, "[%s] %s logged in using the admin password", cl->hostname, cl->name);
+                mlog(ACLOG_INFO, "[%s] %s logged in using the admin password in line %d%s", cl->hostname, cl->name, pd.line, tags);
             }
             else if(wantrole == CR_ADMIN && cl->checkvitadate(VS_ADMIN) && bantype != BAN_MASTER) // pass admins always through
             { // Set as admin in vita and is trying to connect as admin
@@ -4519,19 +4518,21 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
             {
                 client &c = addclient();
                 c.type = ST_TCPIP;
+                c.needsauth = usemaster || mandatory_auth;
                 c.peer = event.peer;
                 c.peer->data = (void *)(size_t)c.clientnum;
                 c.connectmillis = servmillis;
                 c.state.state = CS_SPECTATE;
+                c.salt = (rnd(0x1000000)*((servmillis%1000)+1)) ^ rnd(0x1000000);
                 char hn[1024];
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 c.ip = ENET_NET_TO_HOST_32(c.peer->address.host);
                 c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
-                //const char *gi = geoiplist.check(c.ip);
-                //copystring(c.country, gi ? gi : "--", 3);
-                //filtercountrycode(c.country, c.country);
+                const char *gi = geoiplist.check(c.ip);
+                copystring(c.country, gi ? gi : "--", 3);
+                filtercountrycode(c.country, c.country);
                 entropy_add_byte(c.ip);
-                mlog(ACLOG_INFO,"[%s] client connected", c.hostname);
+                mlog(ACLOG_INFO,"[%s] client connected (%s)", c.hostname, c.country);
                 sendservinfo(c);
                 totalclients++;
                 break;
@@ -4667,8 +4668,8 @@ void extinfo_statsbuf(ucharbuf &p, int pid, int bpos, ENetSocket &pongsock, ENet
         putint(p,ismatch ? 0 : clients[i]->state.gunselect);  //Gun selected
         putint(p,clients[i]->role);             //Role
         putint(p,clients[i]->state.state);      //State (Alive,Dead,Spawning,Lagged,Editing)
-        //uint ip = clients[i]->peer->address.host; // only 3 byte of the ip address (privacy protected)
-        //p.put((uchar*)&ip,3);
+        uint ip = clients[i]->peer->address.host; // only 3 byte of the ip address (privacy protected)
+        p.put((uchar*)&ip,3);
         putint(p,ismatch ? 0 : clients[i]->state.damage); //Damage
         putint(p,ismatch ? 0 : clients[i]->state.shotdamage); //Shot with damage
 
@@ -4705,6 +4706,7 @@ void extinfo_teamscorebuf(ucharbuf &p)
     }
 }
 
+
 #ifndef STANDALONE
 void localdisconnect()
 {
@@ -4718,6 +4720,8 @@ void localconnect()
     client &c = addclient();
     c.type = ST_LOCAL;
     c.role = CR_ADMIN;
+    c.salt = 0;
+    c.needsauth = false;
     copystring(c.hostname, "local");
     sendservinfo(c);
 }
@@ -4804,7 +4808,7 @@ void initserver(bool dedicated)
         if(gotvitas < 0) gotvitas = readvitas((vn = vitafilename_backup));
         if(gotvitas >= 0) mlog(ACLOG_INFO, "read %d player vitas from %s", gotvitas, vn);
         maprot.init(scl.maprotfile);
-        //passwords.init(scl.pwdfile, scl.adminpasswd);
+        passwords.init(scl.pwdfile, scl.adminpasswd);
         ipblacklist.init(scl.blfile);
         geoiplist.init(scl.geoipfile);
         nickblacklist.init(scl.nbfile);
@@ -4834,6 +4838,7 @@ void initserver(bool dedicated)
         #ifdef WIN32
         SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
         #endif
+        // kill -2 / Ctrl-C - see http://msdn.microsoft.com/en-us/library/xdkz3x12%28v=VS.100%29.aspx (or VS-2008?) for caveat (seems not to pertain to AC - 2011feb05:ft)
         if (signal(SIGINT, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGINT!");
         // kill -15 / probably process-manager on Win32 *shrug*
         if (signal(SIGTERM, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGTERM!");
@@ -4842,6 +4847,7 @@ void initserver(bool dedicated)
         if (signal(SIGHUP, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGHUP!");
         #endif
         mlog(ACLOG_INFO, "dedicated server started, waiting for clients...");
+        mlog(ACLOG_INFO, "Ctrl-C to exit"); // this will now actually call the atexit-hooks below - thanks to SIGINT hooked above - noticed and signal-code-docs found by SKB:2011feb05:ft:
         atexit(enet_deinitialize);
         atexit(cleanupserver);
         enet_time_set(0);
@@ -4918,3 +4924,4 @@ int main(int argc, char **argv)
     #endif
 }
 #endif
+

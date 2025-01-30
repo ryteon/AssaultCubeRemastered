@@ -1,6 +1,6 @@
-#pragma once
+// server.h
 
-#define gamemode sg->smode // allows the gamemode macros to work with the server mode
+#define gamemode sg->smode   // allows the gamemode macros to work with the server mode
 
 #define SERVER_PROTOCOL_VERSION    (PROTOCOL_VERSION)    // server without any gameplay modification
 //#define SERVER_PROTOCOL_VERSION   (-PROTOCOL_VERSION)  // server with gameplay modification but compatible to vanilla client (using /modconnect)
@@ -250,6 +250,7 @@ struct client                   // server side version of "dynent" type
     int mute, spam, lastvc; // server side voice comm spam control
     int acversion, acbuildtype;
     bool isauthed; // for passworded servers
+    bool needsauth;
     bool haswelcome;
     bool isonrightmap, loggedwrongmap, freshgame;
     bool timesync;
@@ -540,8 +541,8 @@ guninfo guns[NUMGUNS] =
 
 const char *gunnames[NUMGUNS + 1];
 
-const char *teamnames[] = {"T", "CT", "T-SPECT", "CT-SPECT", "SPECTATOR", "", "void"};
-const char *teamnames_s[] = {"T", "CT", "TSPC", "CTSPC", "SPEC", "", "void"};
+const char *teamnames[] = {"CLA", "RVSF", "CLA-SPECT", "RVSF-SPECT", "SPECTATOR", "", "void"};
+const char *teamnames_s[] = {"CLA", "RVSF", "CSPC", "RSPC", "SPEC", "", "void"};
 
 const char *rolenames[CR_NUM + 1] = { "unarmed", "master", "admin", "owner", "" };
 
