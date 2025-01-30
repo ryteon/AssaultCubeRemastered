@@ -364,12 +364,12 @@ bool listdir(const char *dir, const char *ext, vector<char *> &files)
     #if defined(WIN32)
     defformatstring(pathname)("%s\\*.%s", dir, ext ? ext : "*");
     WIN32_FIND_DATA FindFileData;
-    HANDLE Find = FindFirstFile(path(pathname), &FindFileData);
+    HANDLE Find = FindFirstFile((LPCWSTR)path(pathname), &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
     {
         do {
             if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-                files.add(newstring(FindFileData.cFileName, (int)strlen(FindFileData.cFileName) - extsize));
+                files.add(newstring((size_t)FindFileData.cFileName, (int)strlen((const char *)FindFileData.cFileName) - extsize));
         } while(FindNextFile(Find, &FindFileData));
         FindClose(Find);
         return true;
