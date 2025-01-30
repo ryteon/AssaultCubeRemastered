@@ -1172,39 +1172,6 @@ void afterauth()
     }
 }
 
-#ifdef WIN32
-static char *parsecommandline(const char *src, vector<char *> &args)
-{
-    char *buf = new char[strlen(src) + 1], *dst = buf;
-    for(;;)
-    {
-        while(isspace(*src)) src++;
-        if(!*src) break;
-        args.add(dst);
-        for(bool quoted = false; *src && (quoted || !isspace(*src)); src++)
-        {
-            if(*src != '"') *dst++ = *src;
-            else if(dst > buf && src[-1] == '\\') dst[-1] = '"';
-            else quoted = !quoted;
-        }
-        *dst++ = '\0';
-    }
-    args.add(NULL);
-    return buf;
-}
-
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
-{
-    vector<char *> args;
-    char *buf = parsecommandline(GetCommandLine(), args);
-    SDL_SetModuleHandle(hInst);
-    int status = SDL_main(args.length()-1, args.getbuf());
-    delete[] buf;
-    exit(status);
-    return 0;
-}
-#endif
-
 void initclientlog()  // rotate old logfiles and create new one
 {
     filerotate("clientlog", "txt", 5); // keep five old logfiles
