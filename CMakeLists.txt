@@ -197,6 +197,8 @@ if(TARGET_OS STREQUAL "windows")
 
     target_link_libraries(${CLIENT} -static-libgcc)
     target_link_libraries(${CLIENT} -static-libstdc++)
+    
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-mwindows")
 endif()
 
 # Server
