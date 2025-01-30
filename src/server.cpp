@@ -3047,8 +3047,8 @@ void process(ENetPacket *packet, int sender, int chan)
         else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) return; //disconnect_client(sender, DISC_TAGT);
         else if(type == SV_SERVINFO_RESPONSE)
         {
-			int curpeerport = getint(p);
-			enet_uint32 curpeerip = getip4(p);
+			//int curpeerport = getint(p);
+			//enet_uint32 curpeerip = getip4(p);
 			sendf(sender, 1, "rii", SV_SERVINFO_CONTD, 0);
 		}
         else
@@ -4527,7 +4527,7 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
                 char hn[1024];
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 c.ip = ENET_NET_TO_HOST_32(c.peer->address.host);
-                c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
+                //c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
                 //const char *gi = geoiplist.check(c.ip);
                 //copystring(c.country, gi ? gi : "--", 3);
                 //filtercountrycode(c.country, c.country);

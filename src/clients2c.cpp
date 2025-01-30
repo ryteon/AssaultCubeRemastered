@@ -249,7 +249,7 @@ VARP(voicecomsounds, 0, 1, 2);
 
 struct session_s
 {
-    enet_uint32 serverip, clientip, clientipcensored, curpeerip;
+    enet_uint32 serverip, clientip, /*clientipcensored, */curpeerip;
     int curpeerport, serverclock, clientclock, cn, datecodes;
     uchar serverpubkey[32], clientsignature[64];
     string clan, publiccomment;
@@ -314,8 +314,8 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 packetbuf pr(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
                 putint(pr, SV_SERVINFO_RESPONSE);
                 //putint(pr, s->clientclock);
-                putint(pr, s->curpeerport);
-                putip4(pr, s->curpeerip);
+                //putint(pr, s->curpeerport);
+                //putip4(pr, s->curpeerip);
                 sendpackettoserv(1, pr.finalize());
                 break;
             }
