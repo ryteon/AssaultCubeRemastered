@@ -4532,10 +4532,10 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
                 c.ip = ENET_NET_TO_HOST_32(c.peer->address.host);
                 //c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
                 const char *gi = geoiplist.check(c.ip);
-                copystring(c.country, gi ? gi : "--", 3);
-                filtercountrycode(c.country, c.country);
+                //copystring(c.country, gi ? gi : "--", 3);
+                //filtercountrycode(c.country, c.country);
                 entropy_add_byte(c.ip);
-                mlog(ACLOG_INFO,"[%s] client connected (%s)", c.hostname, c.country);
+                mlog(ACLOG_INFO,"[%s] client connected", c.hostname);
                 sendservinfo(c);
                 totalclients++;
                 break;
