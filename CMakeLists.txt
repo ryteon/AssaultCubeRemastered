@@ -199,11 +199,11 @@ if(TARGET_OS STREQUAL "windows")
     target_link_libraries(${CLIENT} -static-libstdc++)
     
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-mwindows")
+else()
+	set(SERVER AssaultCube-Server)
+
+	add_executable(${SERVER} ${SERVER_SOURCES} ${SERVER_INCLUDES})
+	target_compile_definitions(${SERVER} PRIVATE STANDALONE=1)
+	target_include_directories(${SERVER} PRIVATE ${SERVER_LIBRARY_INCLUDES})
+	target_link_libraries(${SERVER} ${ENet_LIBRARIES} ${ZLIB_LIBRARIES})
 endif()
-
-# Server
-
-add_executable(AssaultCube-Server ${SERVER_SOURCES} ${SERVER_INCLUDES})
-target_compile_definitions(AssaultCube-Server PRIVATE STANDALONE=1)
-target_include_directories(AssaultCube-Server PRIVATE ${SERVER_LIBRARY_INCLUDES} ${SDL2_INCLUDE_DIR})
-target_link_libraries(AssaultCube-Server ${ENet_LIBRARIES} ${ZLIB_LIBRARIES})
