@@ -364,7 +364,7 @@ bool listdir(const char *dir, const char *ext, vector<char *> &files)
     #if defined(WIN32)
     defformatstring(pathname)("%s\\*.%s", dir, ext ? ext : "*");
     WIN32_FIND_DATA FindFileData;
-    HANDLE Find = FindFirstFile((LPCWSTR)path(pathname), &FindFileData);
+    HANDLE Find = FindFirstFile(path(pathname), &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
     {
         do {
