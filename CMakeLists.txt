@@ -185,8 +185,7 @@ target_link_libraries(${CLIENT} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRAR
 
 if(TARGET_OS STREQUAL "windows")
 	target_link_libraries(${CLIENT} opengl32 winmm imm32)
-	#target_link_options(AssaultCube-Client PRIVATE -mwindows)
-	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+	target_link_options(${CLIENT} PRIVATE -mwindows)
 	set_target_properties(${CLIENT} PROPERTIES WIN32_EXECUTABLE FALSE)
 
 	target_compile_definitions(${CLIENT} PRIVATE NOMINMAX)
@@ -198,8 +197,6 @@ if(TARGET_OS STREQUAL "windows")
 
     target_link_libraries(${CLIENT} -static-libgcc)
     target_link_libraries(${CLIENT} -static-libstdc++)
-    
-    target_link_options(${CLIENT} PRIVATE /ENTRY:mainCRTStartup)
 endif()
 
 # Server
