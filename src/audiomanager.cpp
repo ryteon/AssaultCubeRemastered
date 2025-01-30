@@ -266,8 +266,6 @@ void audiomanager::setchannels(int num)
     if(!nosound) sourcescheduler::instance().init(num);
 };
 
-
-
 // called at game exit
 void audiomanager::soundcleanup()
 {
@@ -1119,5 +1117,3 @@ void sortmapsoundslots(char **args, int numargs)
     hdr.flags |= MHF_AUTOMAPCONFIG; // requires automapcfg
 }
 COMMAND(sortmapsoundslots, "v");
-
-
