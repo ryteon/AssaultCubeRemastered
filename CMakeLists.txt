@@ -102,7 +102,6 @@ set(CLIENT_INCLUDES
 	varray.h
 	vertmodel.h
 	weapon.h
-	winserviceinstaller.h
 	world.h
 	ge25519_base.data
 )
