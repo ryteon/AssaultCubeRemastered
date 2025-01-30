@@ -205,5 +205,5 @@ endif()
 
 add_executable(AssaultCube-Server ${SERVER_SOURCES} ${SERVER_INCLUDES})
 target_compile_definitions(AssaultCube-Server PRIVATE STANDALONE=1)
-target_include_directories(AssaultCube-Server PRIVATE ${SERVER_LIBRARY_INCLUDES})
+target_include_directories(AssaultCube-Server PRIVATE ${SERVER_LIBRARY_INCLUDES} ${SDL2_INCLUDE_DIR})
 target_link_libraries(AssaultCube-Server ${ENet_LIBRARIES} ${ZLIB_LIBRARIES})
