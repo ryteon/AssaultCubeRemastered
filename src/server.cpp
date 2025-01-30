@@ -11,7 +11,6 @@ VARP(serverdebug, 0, 0, 1);
 #endif
 
 #include "server.h"
-#include "servercontroller.h"
 #include "serverfiles.h"
 
 #include "signal.h"
@@ -84,7 +83,6 @@ string servpubkey;
 uchar ssk[64] = { 0 }, *spk = ssk + 32;
 enet_uint32 servownip; // IP address of this server, as seen by the master or other clients/servers
 
-servercontroller *svcctrl = NULL;
 serverparameter serverparameters;
 servercommandline scl;
 servermaprot maprot;
@@ -4909,9 +4907,6 @@ int main(int argc, char **argv)
 #endif
     if(scl.service && !svcctrl)
     {
-        #ifdef WIN32
-        svcctrl = new winservice(scl.service, argc, argv);
-        #endif
         if(svcctrl) svcctrl->start();
     }
 

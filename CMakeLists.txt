@@ -141,7 +141,6 @@ set(SERVER_INCLUDES
 	server.h
 	serveractions.h
 	serverchecks.h
-	servercontroller.h
 	serverevents.h
 	serverfiles.h
 )
