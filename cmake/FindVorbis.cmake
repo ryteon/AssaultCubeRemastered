@@ -10,14 +10,12 @@ if (VORBIS_INCLUDE_DIR)
 	set (VORBIS_FIND_QUIETLY TRUE)
 endif ()
 
-find_package (Ogg QUIET)
-
 find_package (PkgConfig QUIET)
-pkg_check_modules (PC_VORBIS QUIET vorbis)
+pkg_check_modules (PC_VORBIS QUIET vorbisfile vorbis)
 
 set (VORBIS_VERSION ${PC_VORBIS_VERSION})
 
-find_path (VORBIS_INCLUDE_DIR vorbis/codec.h
+find_path (VORBIS_INCLUDE_DIR vorbis/vorbisfile.h
 	HINTS
 		${PC_VORBIS_INCLUDEDIR}
 		${PC_VORBIS_INCLUDE_DIRS}
@@ -26,10 +24,8 @@ find_path (VORBIS_INCLUDE_DIR vorbis/codec.h
 
 find_library (VORBIS_LIBRARY
 	NAMES
+		vorbisfile
 		vorbis
-		vorbis_static
-		libvorbis
-		libvorbis_static
 	HINTS
 		${PC_VORBIS_LIBDIR}
 		${PC_VORBIS_LIBRARY_DIRS}
@@ -43,7 +39,6 @@ find_package_handle_standard_args (Vorbis
 	REQUIRED_VARS
 		VORBIS_LIBRARY
 		VORBIS_INCLUDE_DIR
-		OGG_FOUND
 	VERSION_VAR
         VORBIS_VERSION
 	)
@@ -56,7 +51,6 @@ if (VORBIS_FOUND)
 		set_target_properties (Vorbis::Vorbis PROPERTIES
 			INTERFACE_INCLUDE_DIRECTORIES "${VORBIS_INCLUDE_DIR}"
 			IMPORTED_LOCATION "${VORBIS_LIBRARY}"
-			INTERFACE_LINK_LIBRARIES Ogg::Ogg
 		)
 	endif ()
 endif ()

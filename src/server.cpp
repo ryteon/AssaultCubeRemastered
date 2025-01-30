@@ -92,7 +92,7 @@ serveripblacklist ipblacklist;
 serveripcclist geoiplist;
 servernickblacklist nickblacklist;
 serverforbiddenlist forbiddenlist;
-serverpasswords passwords;
+//serverpasswords passwords;
 serverinfofile serverinfoinfo;
 serverinfofile serverinfomotd;
 
@@ -4804,7 +4804,7 @@ void initserver(bool dedicated)
         if(gotvitas < 0) gotvitas = readvitas((vn = vitafilename_backup));
         if(gotvitas >= 0) mlog(ACLOG_INFO, "read %d player vitas from %s", gotvitas, vn);
         maprot.init(scl.maprotfile);
-        passwords.init(scl.pwdfile, scl.adminpasswd);
+        //passwords.init(scl.pwdfile, scl.adminpasswd);
         ipblacklist.init(scl.blfile);
         geoiplist.init(scl.geoipfile);
         nickblacklist.init(scl.nbfile);
