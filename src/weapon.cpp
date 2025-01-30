@@ -590,7 +590,7 @@ vector<hitmsg> hits;
 
 void hit(int damage, playerent *d, playerent *at, const vec &vel, int gun, bool gib, int info)
 {
-    if(d==player1 || d->type==ENT_BOT || !m_mp(gamemode)) d->hitpush(damage, vel, at, gun);
+    if(d==player1 || d->type==ENT_BOT) d->hitpush(damage, vel, at, gun);
 
     if(at == player1 && d != player1)
     {
@@ -604,8 +604,8 @@ void hit(int damage, playerent *d, playerent *at, const vec &vel, int gun, bool 
         }
     }
 
-    if(!m_mp(gamemode)) dodamage(damage, d, at, gun, gib);
-    else
+    dodamage(damage, d, at, gun, gib);
+
     {
         hitmsg &h = hits.add();
         h.target = d->clientnum;
@@ -623,8 +623,8 @@ void hit(int damage, playerent *d, playerent *at, const vec &vel, int gun, bool 
         else
         {
             h.dir = ivec(int(vel.x*DNF), int(vel.y*DNF), int(vel.z*DNF));
-//             damageeffect(damage, d);
-//             audiomgr.playsound(S_PAIN1+rnd(5), d);
+             damageeffect(damage, d);
+             audiomgr.playsound(S_PAIN1+rnd(5), d);
         }
     }
 }

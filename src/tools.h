@@ -94,8 +94,8 @@ inline int iabs(int n) { return labs(n); }
 #pragma warning (disable: 4996) // 'strncpy' was declared deprecated
 #endif
 
-#define strcasecmp(a,b) _stricmp(a,b)
-#define strncasecmp(a,b,n) _strnicmp(a,b,n)
+//#define strcasecmp(a,b) _stricmp(a,b)
+//#define strncasecmp(a,b,n) _strnicmp(a,b,n)
 #define PATHDIV '\\'
 #define PATHDIVS "\\"
 #else

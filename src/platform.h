@@ -40,6 +40,7 @@
 
 #ifndef STANDALONE
     #include <SDL.h>
+    #include <SDL_compat.h>
     #include <SDL_image.h>
 
     #ifdef __APPLE__

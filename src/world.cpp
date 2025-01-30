@@ -3,7 +3,6 @@
 #include "cube.h"
 #include "bot/bot.h"
 
-
 sqr *world = NULL;
 int sfactor, ssize, cubicsize, mipsize;
 
