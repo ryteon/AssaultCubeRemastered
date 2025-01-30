@@ -177,10 +177,8 @@ target_include_directories(AssaultCube-Client PRIVATE ${CLIENT_LIBRARY_INCLUDES}
 
 target_link_libraries(AssaultCube-Client ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${OGG_LIBRARIES} ${OPENAL_LIBRARY} ${OPENGL_LIBRARIES} ${X11_LIBRARIES} ${ENet_LIBRARIES} SDL2_image::SDL2_image ${VORBIS_LIBRARIES} SDL2::SDL2)
 
-if (WIN32)
-    set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-else()
-    set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
+if(WIN32)
+	set_target_properties(AssaultCube-Client PROPERTIES WIN32_EXECUTABLE 1)
 endif()
 
 target_link_options(AssaultCube-Client PRIVATE ${SUBSYSTEM_LINKER_OPTIONS})
