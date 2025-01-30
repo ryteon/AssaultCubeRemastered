@@ -40,8 +40,8 @@
 
 #ifndef STANDALONE
     #include <SDL.h>
-    #include <SDL_compat.h>
     #include <SDL_image.h>
+    #include <SDL_main.h>
 
     #ifdef __APPLE__
         #undef SDL_VIDEO_DRIVER_WINDOWS
@@ -74,4 +74,3 @@
 #if defined(WIN32) || defined(__APPLE__) || !defined(STANDALONE) || defined(AC_FORCE_SDL_THREADS)
     #define AC_USE_SDL_THREADS
 #endif
-
