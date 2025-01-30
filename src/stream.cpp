@@ -152,13 +152,13 @@ size_t fixpackagedir(char *dir)
 char *getregszvalue(HKEY root, const char *keystr, const char *query)
 {
     HKEY key;
-    if(RegOpenKeyEx(HKEY_CURRENT_USER, (LPCSTR)keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
+    if(RegOpenKeyEx(HKEY_CURRENT_USER, keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
     {
         DWORD type = 0, len = 0;
-        if(RegQueryValueEx(key, (LPCSTR)query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
+        if(RegQueryValueEx(key, query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
         {
             char *val = new char[len];
-            long result = RegQueryValueEx(key, (LPCSTR)query, 0, &type, (uchar *)val, &len);
+            long result = RegQueryValueEx(key, query, 0, &type, (uchar *)val, &len);
             if(result==ERROR_SUCCESS)
             {
                 RegCloseKey(key);
@@ -297,11 +297,11 @@ bool listsubdir(const char *dir, vector<char *> &subdirs)
     #if defined(WIN32)
     defformatstring(pathname)("%s\\*", dir);
     WIN32_FIND_DATA FindFileData;
-    HANDLE Find = FindFirstFile((LPCSTR)path(pathname), &FindFileData);
+    HANDLE Find = FindFirstFile(path(pathname), &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
     {
         do {
-            if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && FindFileData.cFileName[0] != '.') subdirs.add(newstring((const char *)FindFileData.cFileName));
+            if((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && FindFileData.cFileName[0] != '.') subdirs.add(newstring(FindFileData.cFileName));
         } while(FindNextFile(Find, &FindFileData));
         FindClose(Find);
         return true;
@@ -369,7 +369,7 @@ bool listdir(const char *dir, const char *ext, vector<char *> &files)
     {
         do {
             if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-                files.add(newstring((const char *)FindFileData.cFileName, (int)strlen((const char *)FindFileData.cFileName) - extsize));
+                files.add(newstring(FindFileData.cFileName, (int)strlen(FindFileData.cFileName) - extsize));
         } while(FindNextFile(Find, &FindFileData));
         FindClose(Find);
         return true;
