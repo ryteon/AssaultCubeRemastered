@@ -1318,4 +1318,3 @@ struct servercommandline
         return true;
     }
 };
-

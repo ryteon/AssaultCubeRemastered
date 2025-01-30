@@ -14,7 +14,7 @@
 // -M CRU
 
 // example MOTD:
- -o \f3server using example cmdline file (config/servercmdline.txt)\n\f2feel free to change this :)
+ -o \f3Welcome to the server!
 
 
 // commonly used commandline switches:

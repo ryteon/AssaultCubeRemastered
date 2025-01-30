@@ -2430,6 +2430,8 @@ void startgame(const char *newname, int newmode, int newtime, bool notify)
         if(notify)
         {
             // change map
+            //conoutf("\f3change map: %s", sg->smapname);
+            mlog(ACLOG_INFO, "change map: %s", sg->smapname);
             sendf(-1, 1, "risiiii", SV_MAPCHANGE, sg->smapname, sg->smode, sm && sm->isdistributable() ? sm->cgzlen : 0, sm && sm->isdistributable() ? sm->maprevision : 0, sg->srvgamesalt);
             if(sg->smode != GMODE_DEMO && sg->smode != GMODE_COOPEDIT) sendf(-1, 1, "ri3", SV_TIMEUP, sg->gamemillis, sg->gamelimit);
         }
@@ -2879,7 +2881,7 @@ bool restorescore(client &c)
 void sendservinfo(client &c)
 {
     //sendf(c.clientnum, 1, "ri6IIIi3k", SV_SERVINFO, c.clientnum, isdedicated ? SERVER_PROTOCOL_VERSION : PROTOCOL_VERSION, scl.serverpassword[0] ? 1 : 0, servownip, c.ip, c.ip_censored, (c.connectclock = servclock), c.country[0], c.country[1], spk);
-	sendf(c.clientnum, 1, "ri6IIIi3k", SV_SERVINFO, c.clientnum, 31, 69, servownip, c.ip, spk);
+	sendf(c.clientnum, 1, "ri4IIIk", SV_SERVINFO, c.clientnum, 31, 69, servownip, c.ip, c.ip_censored, spk);
 }
 
 void putinitclient(client &c, packetbuf &p)
@@ -2894,7 +2896,7 @@ void putinitclient(client &c, packetbuf &p)
     putint(p, c.maxrolleffect);
     putint(p, c.ffov);
     putint(p, c.scopefov);
-    //putint(p, c.ip_censored);
+    putint(p, c.ip_censored);
 }
 
 void sendinitclient(client &c)
@@ -2926,6 +2928,7 @@ void welcomepacket(packetbuf &p, int n)
     if(sg->smapname[0] && !m_demo)
     {
         putint(p, SV_MAPCHANGE);
+        mlog(ACLOG_INFO, "change map: %s", sg->smapname);
         sendstring(sg->smapname, p);
         putint(p, sg->smode);
         putint(p, sg->curmap && sg->curmap->isdistributable() ? sg->curmap->cgzlen : 0);
@@ -3045,12 +3048,6 @@ void process(ENetPacket *packet, int sender, int chan)
 
         if(chan==0) return;
         else if(chan!=1 || ((type = getint(p)) != SV_SERVINFO_RESPONSE && type != SV_CONNECT)) return; //disconnect_client(sender, DISC_TAGT);
-        else if(type == SV_SERVINFO_RESPONSE)
-        {
-			//int curpeerport = getint(p);
-			//enet_uint32 curpeerip = getip4(p);
-			sendf(sender, 1, "rii", SV_SERVINFO_CONTD, 0);
-		}
         else
         { // SV_CONNECT
             cl->acversion = getint(p);
@@ -3104,7 +3101,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
-            else if(strcmp(scl.adminpasswd, cl->pwd) && (banned && !srvfull && !srvprivate) && bantype != BAN_MASTER)
+            else if(!strcmp(scl.adminpasswd, cl->pwd) && (banned && !srvfull && !srvprivate) && bantype != BAN_MASTER)
             { // admin (or deban) password match
                 cl->isauthed = true;
                 if(wantrole == CR_ADMIN) clientrole = CR_ADMIN;
@@ -3142,7 +3139,7 @@ void process(ENetPacket *packet, int sender, int chan)
             }
             else if(scl.serverpassword[0] && !(srvprivate || srvfull || banned))
             { // server password required
-                if(strcmp(scl.serverpassword, cl->pwd))
+                if(!strcmp(scl.serverpassword, cl->pwd))
                 {
                     cl->isauthed = true;
                     mlog(ACLOG_INFO, "[%s] %s client logged in (using serverpassword)%s", cl->hostname, cl->name, tags);
@@ -4527,7 +4524,7 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
                 char hn[1024];
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 c.ip = ENET_NET_TO_HOST_32(c.peer->address.host);
-                //c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
+                c.ip_censored = c.ip & ~((1 << CLIENTIPCENSOR) - 1);
                 //const char *gi = geoiplist.check(c.ip);
                 //copystring(c.country, gi ? gi : "--", 3);
                 //filtercountrycode(c.country, c.country);
@@ -4705,7 +4702,6 @@ void extinfo_teamscorebuf(ucharbuf &p)
         putint(p, -1); // ?
     }
 }
-
 
 #ifndef STANDALONE
 void localdisconnect()

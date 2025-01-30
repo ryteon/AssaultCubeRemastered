@@ -35,8 +35,9 @@ extern void trydisconnect();
 
 bool localwrongmap = false;
 
-bool changemapserv(char *name, int mode, int download, int revision)        // forced map change from the server
+bool changemapserv(char *name, int mode, int download, int revision) // forced map change from the server
 {
+    conoutf("\f3map name: %s", name);
     gamemode = mode;
     if(m_demo) return true;
     if(m_coop)
@@ -116,7 +117,7 @@ void parsepositions(ucharbuf &p)
     int type;
     while(p.remaining()) switch(type = getint(p))
     {
-        case SV_POS:                        // position of another client
+        case SV_POS: // position of another client
         case SV_POSC:
         case SV_POSC2:
         case SV_POSC3:
@@ -249,7 +250,7 @@ VARP(voicecomsounds, 0, 1, 2);
 
 struct session_s
 {
-    enet_uint32 serverip, clientip, /*clientipcensored, */curpeerip;
+    enet_uint32 serverip, clientip, clientipcensored, curpeerip;
     int curpeerport, serverclock, clientclock, cn, datecodes;
     uchar serverpubkey[32], clientsignature[64];
     string clan, publiccomment;
@@ -276,14 +277,11 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
         }
         else protocoldebug(false);
         #endif
-        
-        //conoutf("\f3type: %d", type);
 
         switch(type)
         {
-            case SV_SERVINFO:  // welcome message from the server
+            case SV_SERVINFO: // welcome message from the server
             {
-                string tmp1, tmp2;
                 session_s *s = &session;
                 memset(s, 0, sizeof(session_s));
 
@@ -296,14 +294,10 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                     conoutf("\f3incompatible game protocol (local protocol: %d :: server protocol: %d)", 31, prot);
                     return;
                 }
-                if(getint(p) > 0) conoutf("INFO: this server is password protected");
                 s->serverip = getip4(p);
                 s->clientip = getip4(p);
+                s->clientipcensored = getip4(p);
                 p.get(s->serverpubkey, 32);
-                //s->clientipcensored = getip4(p);
-                //s->serverclock = getint(p);
-                
-                //s->clientclock = (int) (time(NULL) / (time_t) 60);
 
                 if(curpeer && s->serverip)
                 {
@@ -311,18 +305,6 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                     s->curpeerport = curpeer->address.port;
                 }
 
-                packetbuf pr(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-                putint(pr, SV_SERVINFO_RESPONSE);
-                //putint(pr, s->clientclock);
-                //putint(pr, s->curpeerport);
-                //putip4(pr, s->curpeerip);
-                sendpackettoserv(1, pr.finalize());
-                break;
-            }
-            
-            case SV_SERVINFO_CONTD:
-            {
-				session_s *s = &session;
                 player1->clientnum = s->cn;
                 sendintro();
                 break;

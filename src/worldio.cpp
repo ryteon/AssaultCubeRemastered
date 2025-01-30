@@ -924,7 +924,7 @@ static string lastloadedconfigfile;
 
 bool incompatiblemap = false;
 
-int load_world(char *mname)        // still supports all map formats that have existed since the earliest cube betas!
+int load_world(char *mname) // still supports all map formats that have existed since the earliest cube betas!
 {
     incompatiblemap = false;
     const int sizeof_header = sizeof(header), sizeof_baseheader = sizeof_header - sizeof(int) * 16;
