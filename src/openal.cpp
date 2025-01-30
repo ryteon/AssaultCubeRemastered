@@ -60,7 +60,6 @@ void source::reset()
     alSourcef(id, AL_ROLLOFF_FACTOR, al_rollofffactor/100.0f);
 }
 
-
 void source::init(sourceowner *o)
 {
     ASSERT(o);
@@ -243,7 +242,6 @@ void source::printposition()
     conoutf("sound %d: pos(%f,%f,%f) t(%d) ", id, v.x, v.y, v.z, s);
     ALERR;
 }
-
 
 // represents an OpenAL sound buffer
 
