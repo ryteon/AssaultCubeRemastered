@@ -1172,7 +1172,7 @@ void afterauth()
     }
 }
 
-#ifdef THISISNOTDEFINED //WIN32
+#ifdef WIN32
 static char *parsecommandline(const char *src, vector<char *> &args)
 {
     char *buf = new char[strlen(src) + 1], *dst = buf;
@@ -1192,7 +1192,6 @@ static char *parsecommandline(const char *src, vector<char *> &args)
     args.add(NULL);
     return buf;
 }
-
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 {

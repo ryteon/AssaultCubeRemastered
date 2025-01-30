@@ -188,11 +188,11 @@ enum
 #define m_autospawn   (gamemode == 0 || gamemode == 2 || gamemode == 6 || gamemode == 13 || gamemode == 16)
 #define m_teammode    (gamemode==0 || gamemode==4 || gamemode==5 || gamemode==7 || gamemode==11 || gamemode==13 || gamemode==14 || gamemode==16 || gamemode==17 || gamemode==20 || gamemode==21)
 #define m_tarena      (m_arena && m_teammode)
-//#define m_botmode     (gamemode==7 || gamemode == 8 || gamemode==12 || (gamemode>=18 && gamemode<=21))
-#define m_botmode true
+#define m_botmode     (gamemode==7 || gamemode == 8 || gamemode==12 || (gamemode>=18 && gamemode<=21))
+//#define m_botmode true
 #define m_valid(mode) (((mode)>=0 && (mode)<GMODE_NUM) || (mode) == -1)
-//#define m_mp(mode)    (m_valid(mode) && (mode)>=0 && (mode)!=7 && (mode)!=8 && (mode)!=12 && ((mode)<18 || (mode)>21))
-#define m_mp(mode) false
+#define m_mp(mode)    (m_valid(mode) && (mode)>=0 && (mode)!=7 && (mode)!=8 && (mode)!=12 && ((mode)<18 || (mode)>21))
+//#define m_mp(mode) false
 #define m_demo        (gamemode==-1)
 #define m_coop        (gamemode==1)
 #define m_flags_      (m_ctf || m_htf || m_ktf) // trailing underscore is required to prevent name clash on FreeBSD systems
