@@ -4,6 +4,12 @@ project(AssaultCube)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(TARGET_OS "windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  set(TARGET_OS "linux")
+endif()
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(ENet REQUIRED)
@@ -171,17 +177,29 @@ list(SORT SERVER_INCLUDES)
 
 # Client
 
-add_executable(AssaultCube-Client ${CLIENT_SOURCES} ${CLIENT_INCLUDES})
+set(CLIENT AssaultCube-Client)
 
-target_include_directories(AssaultCube-Client PRIVATE ${CLIENT_LIBRARY_INCLUDES})
+add_executable(${CLIENT} ${CLIENT_SOURCES} ${CLIENT_INCLUDES})
 
-target_link_libraries(AssaultCube-Client ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${OGG_LIBRARIES} ${OPENAL_LIBRARY} ${OPENGL_LIBRARIES} ${X11_LIBRARIES} ${ENet_LIBRARIES} SDL2_image::SDL2_image ${VORBIS_LIBRARIES} SDL2::SDL2)
+target_include_directories(${CLIENT} PRIVATE ${CLIENT_LIBRARY_INCLUDES})
 
-if (WIN32)
-	target_link_libraries(AssaultCube-Client -mwindows)
+target_link_libraries(${CLIENT} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${OGG_LIBRARIES} ${OPENAL_LIBRARY} ${OPENGL_LIBRARIES} ${X11_LIBRARIES} ${ENet_LIBRARIES} SDL2_image::SDL2_image ${VORBIS_LIBRARIES} SDL2::SDL2)
+
+if(TARGET_OS STREQUAL "windows")
+	target_link_libraries(${CLIENT} opengl32 winmm imm32)
 	#target_link_options(AssaultCube-Client PRIVATE -mwindows)
 	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-	set_target_properties(AssaultCube-Client PROPERTIES WIN32_EXECUTABLE FALSE)
+	set_target_properties(${CLIENT} PROPERTIES WIN32_EXECUTABLE FALSE)
+
+	target_compile_definitions(${CLIENT} PRIVATE NOMINMAX)
+    target_compile_definitions(${CLIENT} PRIVATE WIN32_LEAN_AND_MEAN)
+    target_compile_definitions(${CLIENT} PRIVATE NTDDI_VERSION=0x06000000)
+    target_compile_definitions(${CLIENT} PRIVATE _WIN32_WINNT=0x0600)
+    target_compile_definitions(${CLIENT} PRIVATE UNICODE)
+    target_compile_definitions(${CLIENT} PRIVATE _UNICODE)
+
+    target_link_libraries(${CLIENT} -static-libgcc)
+    target_link_libraries(${CLIENT} -static-libstdc++)
 endif()
 
 # Server
