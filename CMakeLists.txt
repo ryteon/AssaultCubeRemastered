@@ -200,6 +200,8 @@ if(TARGET_OS STREQUAL "windows")
 
     target_link_libraries(${CLIENT} -static-libgcc)
     target_link_libraries(${CLIENT} -static-libstdc++)
+    
+    target_link_options(${CLIENT} PRIVATE /ENTRY:mainCRTStartup)
 endif()
 
 # Server
