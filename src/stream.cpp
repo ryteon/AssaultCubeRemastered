@@ -152,13 +152,13 @@ size_t fixpackagedir(char *dir)
 char *getregszvalue(HKEY root, const char *keystr, const char *query)
 {
     HKEY key;
-    if(RegOpenKeyEx(HKEY_CURRENT_USER, (const wchar_t *)keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
+    if(RegOpenKeyEx(HKEY_CURRENT_USER, (LPCSTR)keystr, 0, KEY_READ, &key)==ERROR_SUCCESS)
     {
         DWORD type = 0, len = 0;
-        if(RegQueryValueEx(key, (const wchar_t *)query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
+        if(RegQueryValueEx(key, (LPCSTR)query, 0, &type, 0, &len)==ERROR_SUCCESS && type==REG_SZ)
         {
             char *val = new char[len];
-            long result = RegQueryValueEx(key, (const wchar_t *)query, 0, &type, (uchar *)val, &len);
+            long result = RegQueryValueEx(key, (LPCSTR)query, 0, &type, (uchar *)val, &len);
             if(result==ERROR_SUCCESS)
             {
                 RegCloseKey(key);
@@ -297,7 +297,7 @@ bool listsubdir(const char *dir, vector<char *> &subdirs)
     #if defined(WIN32)
     defformatstring(pathname)("%s\\*", dir);
     WIN32_FIND_DATA FindFileData;
-    HANDLE Find = FindFirstFile((LPCWSTR)path(pathname), &FindFileData);
+    HANDLE Find = FindFirstFile((LPCSTR)path(pathname), &FindFileData);
     if(Find != INVALID_HANDLE_VALUE)
     {
         do {
