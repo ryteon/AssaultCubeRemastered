@@ -4393,7 +4393,6 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
     static int msend = 0, mrec = 0, csend = 0, crec = 0, mnum = 0, cnum = 0;
 #ifdef STANDALONE
     int nextmillis = (int)enet_time_get();
-    if(svcctrl) svcctrl->keepalive();
 #else
     int nextmillis = isdedicated ? (int)enet_time_get() : lastmillis;
 #endif
@@ -4562,11 +4561,6 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
 void cleanupserver()
 {
     if(serverhost) { enet_host_destroy(serverhost); serverhost = NULL; }
-    if(svcctrl)
-    {
-        svcctrl->stop();
-        DELETEP(svcctrl);
-    }
     exitlogging();
 }
 
@@ -4905,10 +4899,6 @@ int main(int argc, char **argv)
     defformatstring(spdoc)("%s/docs/serverparameters.cfg", scl.logfilepath);
     serverparameters_dumpdocu(spdoc);
 #endif
-    if(scl.service && !svcctrl)
-    {
-        if(svcctrl) svcctrl->start();
-    }
 
     if(enet_initialize() < 0) fatal("Unable to initialise network module");
     initserver(true);
