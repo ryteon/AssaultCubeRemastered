@@ -1033,7 +1033,7 @@ void enddemorecord()
 
 void setupdemorecord()
 {
-    if(numlocalclients() || !m_mp(gamemode) || gamemode == GMODE_COOPEDIT) return;
+    if(numlocalclients() || gamemode == GMODE_COOPEDIT) return;
 
     ASSERT(demorecord == NULL);
 
@@ -1646,7 +1646,7 @@ void arenacheck()
     }
 
 #ifndef STANDALONE
-    if(m_botmode && clients[0]->type==ST_LOCAL)
+    if(clients[0]->type==ST_LOCAL)
     {
         int enemies = 0, alive_enemies = 0;
         playerent *alive = NULL;
@@ -1794,14 +1794,11 @@ int numplayers()
 #ifdef STANDALONE
     count = numclients();
 #else
-    if(m_botmode)
-    {
-        extern vector<botent *> bots;
+    if (m_demo) {
+		count = numclients();
+    } else {
+		extern vector<botent *> bots;
         loopv(bots) if(bots[i]) count++;
-    }
-    if(m_demo)
-    {
-        count = numclients();
     }
 #endif
     return count;

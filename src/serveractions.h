@@ -56,7 +56,7 @@ struct mapaction : serveraction
             startgame(map, mode, time);
         }
     }
-    bool isvalid() { return serveraction::isvalid() && mode != GMODE_DEMO && map[0] && mapok && !(isdedicated && !m_mp(mode)); }
+    bool isvalid() { return serveraction::isvalid() && mode != GMODE_DEMO && map[0] && mapok; }
 
     bool isdisabled() { return false /*maprot.current() && !maprot.current()->vote*/; }
     mapaction(char *map, int mode, int time, int caller, bool q) : map(map), mode(mode), time(time), queue(q)

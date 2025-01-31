@@ -1143,7 +1143,6 @@ void grenadeent::splash()
     {
         if(multiplayer(NULL)) accuracym[GUN_GRENADE].shots++;
     }
-    else if(!m_botmode) return;
     int damage = guns[GUN_GRENADE].damage;
 
     radialeffect(owner->type == ENT_BOT ? player1 : owner, o, damage, owner, GUN_GRENADE);

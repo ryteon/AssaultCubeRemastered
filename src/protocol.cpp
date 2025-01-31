@@ -501,8 +501,8 @@ const char *modefullnames[] =
 const char *modeacronymnames[] =
 {
     "DEMO",
-    "TDM", "coop", "DM", "SURV", "TSURV", "CTF", "PF", "BTDM", "BDM", "LSS",
-    "OSOK", "TOSOK", "BOSOK", "HTF", "TKTF", "KTF", "TPF", "TLSS", "BPF", "BLSS", "BTSURV", "BTOSOK"
+    "TDM", "coop", "DM", "SURV", "TSURV", "CTF", "PF", "LSS",
+    "OSOK", "TOSOK", "HTF", "TKTF", "KTF", "TPF", "TLSS"
 };
 
 const char *voteerrors[] = { "voting is currently disabled", "there is already a vote pending", "already voted", "can't vote that often", "this vote is not allowed in the current environment (singleplayer/multiplayer)", "no permission", "invalid vote", "server denied your call", "the next map/mode is already set" };

@@ -214,7 +214,6 @@ void curmodeattr(char *attr)
     if(!strcmp(attr, "team")) { intret(m_teammode); return; }
     else if(!strcmp(attr, "arena")) { intret(m_arena); return; }
     else if(!strcmp(attr, "flag")) { intret(m_flags_); return; }
-    else if(!strcmp(attr, "bot")) { intret(m_botmode); return; }
     intret(0);
 }
 COMMAND(curmodeattr, "s");
@@ -248,7 +247,7 @@ void playerinfo(int *cn, const char *attr)
     playerent *p = clientnum < 0 ? player1 : getclient(clientnum);
     if(!p)
     {
-        if(!m_botmode && multiplayer(NULL)) // bot clientnums are still glitchy, causing this message to sometimes appear in offline/singleplayer when it shouldn't??? -Bukz 2012may
+        if(multiplayer(NULL)) // bot clientnums are still glitchy, causing this message to sometimes appear in offline/singleplayer when it shouldn't??? -Bukz 2012may
             conoutf("invalid clientnum cn: %d attr: %s", clientnum, attr);
         return;
     }
@@ -580,7 +579,6 @@ void moveotherplayers()
     }
 }
 
-
 bool showhudtimer(int maxsecs, int startmillis, const char *msg, bool flash)
 {
     static string str = "";
@@ -688,8 +686,7 @@ void updateworld(int curtime, int lastmillis)        // main game update loop
     gets2c();
     showrespawntimer();
 
-    // Added by Rick: let bots think
-    if(m_botmode) BotManager.Think();
+    BotManager.Think();
 
     movelocalplayer();
     c2sinfo(player1);   // do this last, to reduce the effective frame lag
@@ -779,7 +776,7 @@ void spawnplayer(playerent *d)
 
 void respawnself()
 {
-    if( m_mp(gamemode) ) addmsg(SV_TRYSPAWN, "r");
+    if( !multiplayer(NULL) ) addmsg(SV_TRYSPAWN, "r");
     else
     {
         if(team_isspect(player1->team))
@@ -964,9 +961,9 @@ void dokill(playerent *pl, playerent *act, bool gib, int gun)
     if(pl == act || isteam(pl->team, act->team))
     {
         if(pl != act) act->tks++;
-        if(!m_mp(gamemode)) act->frags--;
+        act->frags--;
     }
-    else if(!m_mp(gamemode)) act->frags += ( gib && gun != GUN_GRENADE && gun != GUN_SHOTGUN) ? 2 : 1;
+    else act->frags += ( gib && gun != GUN_GRENADE && gun != GUN_SHOTGUN) ? 2 : 1;
 
     if(gib)
     {
@@ -1163,15 +1160,14 @@ void startmap(const char *name, bool reset, bool norespawn)   // called just aft
     if(norespawn) return;
 
     sendmapidenttoserver = true;
-    if(m_botmode) BotManager.BeginMap(name);
-    else kickallbots();
+    BotManager.BeginMap(name);
     showmipstats = false;
     clearbounceents();
     preparectf(!m_flags_);
     suicided = -1;
     spawncycle = -1;
     lasthit = 0;
-    if(m_valid(gamemode) && !m_mp(gamemode)) respawnself();
+    if(m_valid(gamemode)) respawnself();
     else findplayerstart(player1);
 	editingsettingsshowminimal = true; // 1st edittoggle shows edithideentmask(!=0); turned off health pickups last session 2 months ago? now you remember!
 
@@ -1193,7 +1189,7 @@ void startmap(const char *name, bool reset, bool norespawn)   // called just aft
     bool noflags = (m_ctf || m_ktf) && !clentstats.hasflags;
     if(*clientmap) conoutf("game mode is \"%s\"%s", modestr(gamemode, modeacronyms > 0), noflags ? " - \f2but there are no flag bases on this map" : "");
 
-    if(showmodedescriptions && (multiplayer(NULL) || m_botmode))
+    if(showmodedescriptions && multiplayer(NULL))
     {
         loopv(gmdescs) if(gmdescs[i].mode == gamemode) conoutf("\f1%s", gmdescs[i].desc);
     }
@@ -1563,8 +1559,8 @@ void clearvote() { DELETEP(curvote); DELETEP(calledvote); }
 
 const char *modestrings[] =
 {
-    "tdm", "coop", "dm", "lms", "ts", "ctf", "pf", "btdm", "bdm", "lss",
-    "osok", "tosok", "bosok", "htf", "tktf", "ktf", "tpf", "tlss", "bpf", "blss", "btsurv", "btosok"
+    "tdm", "coop", "dm", "lms", "ts", "ctf", "pf", "lss",
+    "osok", "tosok", "htf", "tktf", "ktf", "tpf", "tlss"
 };
 
 void setnext(char *mode, char *map)
@@ -1579,12 +1575,6 @@ void setnext(char *mode, char *map)
         switch(i)
         {
             case GMODE_COOPEDIT:
-            case GMODE_BOTTEAMDEATHMATCH:
-            case GMODE_BOTDEATHMATCH:
-            case GMODE_BOTONESHOTONEKILL:
-            case GMODE_BOTLSS:
-            case GMODE_BOTPISTOLFRENZY:
-            case GMODE_BOTTEAMONESHOTONKILL:
                 continue;
         }
         if(!strcmp(mode, modestrings[i]))
@@ -1740,7 +1730,7 @@ COMMAND(spectate, "");
 void setfollowplayer(int cn)
 {
     // silently ignores invalid player-cn value passed
-    if(players.inrange(cn) && players[cn] && !m_botmode)
+    if(players.inrange(cn) && players[cn])
     {
         if(!(m_teammode && player1->team != TEAM_SPECT && !watchingdemo && team_base(players[cn]->team) != team_base(player1->team)))
         {

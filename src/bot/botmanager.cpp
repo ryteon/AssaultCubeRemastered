@@ -921,18 +921,10 @@ botent *CBotManager::CreateBot(const char *team, const char *skill, const char *
     return m;
 }
 
-bool botmode()
-{
-    if(m_botmode) return true;
-    conoutf("the current game mode does not support bots");
-    return false;
-}
-
 // Bot manager class end
 
 void addbot(char *arg1, char *arg2, char *arg3)
 {
-    if(!botmode()) return;
     botent *b = BotManager.CreateBot(arg1, arg2, arg3);
     if (b) conoutf("Bot connected: %s", b->name);
     else { conoutf("Error: Couldn't create bot!"); return; }
@@ -941,7 +933,6 @@ COMMAND(addbot, "sss");
 
 void addnbot(char *arg1, char *arg2, char *arg3)
 {
-    if(!botmode()) return;
     if (!arg1 || !arg1[0]) return;
 
     int i = atoi(arg1);
@@ -994,7 +985,6 @@ COMMAND(idlebots, "i");
 
 void kickbot(const char *szName)
 {
-    if(!botmode()) return;
     if (!szName || !(*szName))
         return;
 
@@ -1043,7 +1033,6 @@ COMMAND(kickallbots, "");
 
 void togglebotview(char *bot)
 {
-    if(!botmode()) return;
   /**
       Disable in arena modes, this command causes the game to go in an "infinite loop"
       due to player1 automatically suiciding thus causing a new round to begin.

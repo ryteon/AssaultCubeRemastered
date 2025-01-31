@@ -95,7 +95,7 @@ void connectserv_(const char *servername, int serverport = 0, const char *passwo
         enet_host_flush(clienthost);
         connmillis = totalmillis;
         connattempts = 0;
-        if(!m_mp(gamemode)) gamemode = GMODE_TEAMDEATHMATCH;
+        gamemode = GMODE_TEAMDEATHMATCH;
     }
     else
     {

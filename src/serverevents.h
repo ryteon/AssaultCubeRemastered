@@ -115,7 +115,7 @@ void processevent(client *c, suicideevent &e)
 void processevent(client *c, pickupevent &e)
 {
     clientstate &gs = c->state;
-    if(m_mp(gamemode) && !gs.isalive(sg->gamemillis)) return;
+    if(!gs.isalive(sg->gamemillis)) return;
     serverpickup(e.ent, c->clientnum);
 }
 

@@ -671,11 +671,10 @@ int execute(const char *p)
 
 #ifndef STANDALONE
 bool exechook(int context, const char *ident, const char *body,...)  // execute cubescript hook if available and allowed in current context/gamemode
-{ // always use one of HOOK_SP_MP, HOOK_SP or HOOK_MP and then OR them (as needed) with HOOK_TEAM, HOOK_NOTEAM, HOOK_BOTMODE, HOOK_FLAGMODE, HOOK_ARENA
+{ // always use one of HOOK_SP_MP, HOOK_SP or HOOK_MP and then OR them (as needed) with HOOK_TEAM, HOOK_NOTEAM, HOOK_FLAGMODE, HOOK_ARENA
     if(multiplayer(NULL) && (context & HOOK_FLAGMASK) != HOOK_MP && (context & HOOK_FLAGMASK) != HOOK_SP_MP) return false; // hook is singleplayer-only
     if(((context & HOOK_TEAM) && !m_teammode) ||
        ((context & HOOK_NOTEAM) && m_teammode) ||
-       ((context & HOOK_BOTMODE) && !m_botmode) ||
        ((context & HOOK_FLAGMODE) && m_flags_) ||
        ((context & HOOK_ARENA) && m_arena)) return false; // wrong gamemode
     if(identexists(ident))

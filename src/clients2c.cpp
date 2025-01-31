@@ -564,7 +564,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                     if(curpeer) closemenu(NULL);
                     conoutf("new round starting... fight!");
                     hudeditf(HUDMSG_TIMER, "FIGHT!");
-                    if(m_botmode) BotManager.RespawnBots();
+                    BotManager.RespawnBots();
                 }
                 addmsg(SV_SPAWN, "rii", player1->lifesequence, player1->weaponsel->type);
                 player1->weaponswitch(player1->primweap, false);
@@ -662,7 +662,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 int vcn = getint(p), acn = getint(p), frags = getint(p), gun = getint(p);
                 playerent *victim = getclient(vcn), *actor = getclient(acn);
                 if(!actor) break;
-                if ( m_mp(gamemode) ) actor->frags = frags;
+                actor->frags = frags;
                 if(!victim) break;
                 dokill(victim, actor, type==SV_GIBDIED, gun);
                 break;
@@ -929,8 +929,7 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 int acn = getint(p);
                 playerent *alive = getclient(acn);
                 conoutf("the round is over! next round in 5 seconds...");
-                if(m_botmode && acn==-2) hudoutf("the bots have won the round!");
-                else if(acn==-1) hudoutf("everyone died!");
+                if(acn==-1) hudoutf("everyone died!");
                 else if(m_teammode) hudoutf("team %s has won the round!", team_string(alive->team));
                 else if(alive==player1) hudoutf("you are the survivor!");
                 else hudoutf("%s is the survivor!", colorname(alive));
