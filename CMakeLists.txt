@@ -173,6 +173,10 @@ list(SORT CLIENT_INCLUDES)
 list(SORT SERVER_SOURCES)
 list(SORT SERVER_INCLUDES)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Client
 
 set(CLIENT AssaultCube-Client)
@@ -197,7 +201,9 @@ if(TARGET_OS STREQUAL "windows")
 
     #target_link_libraries(${CLIENT} -static-libgcc)
     #target_link_libraries(${CLIENT} -static-libstdc++)
-    
+
+    #target_compile_options(${CLIENT} PRIVATE -static-libgcc -static-libstdc++)
+
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-mwindows")
 else()
 	set(SERVER AssaultCube-Server)
